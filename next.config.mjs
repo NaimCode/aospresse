@@ -11,8 +11,12 @@ const config = {
   /* If trying out the experimental appDir, comment the i18n config out
    * @see https://github.com/vercel/next.js/issues/41980 */
   i18n: {
-    locales: ["en"],
-    defaultLocale: "en",
+    locales: ["ar"],
+    defaultLocale: "ar",
+  },
+
+  images: {
+    domains: ['lh3.googleusercontent.com','firebasestorage.googleapis.com','res.cloudinary.com','placehold.jp'],
   },
 };
 export default config;

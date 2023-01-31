@@ -13,6 +13,22 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
+    "paths":{
+      "@ui/*":["./src/ui/*"],
+      "@animations/*":["./public/animations/*"],
+      "@assets/*":["./public/assets/*"],
+      "@model/*":["./src/model/*"],
+      "@config/*":["./src/config/*"],
+      "@utils/*":["./src/utils/*"],
+      "@trpc/route/*":["./src/server/trpc/router/*"],
+      "@data/*":["./src/data/*"],
+      "@hooks/*":["./src/hooks/*"],
+      "@env/*":["./src/env/*"],
+      "@server/*":["./src/server/*"],
+      "@types/*":["./src/model/type.ts"],
+
+
+    },
     "incremental": true,
     "noUncheckedIndexedAccess": true
   },
