@@ -8,7 +8,8 @@ import "../styles/globals.css";
 import Head from "next/head";
 
 import {ConfigProvider} from "antd";
-
+import {Toaster} from "react-hot-toast";
+import ar from 'antd/locale/ar_EG';
 const MyApp: AppType<{ session: Session | null }> = ({
                                                          Component,
                                                          pageProps: {session, ...pageProps},
@@ -25,8 +26,10 @@ const MyApp: AppType<{ session: Session | null }> = ({
             </Head>
             <ConfigProvider
                 direction='ltr'
+                locale={ar}
             >
                 <Component {...pageProps} />
+                <Toaster/>
             </ConfigProvider>
         </SessionProvider>
     );

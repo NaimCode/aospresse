@@ -43,14 +43,24 @@ declare module "next-auth" {
  **/
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
-        session.user.user = user;
-        // session.user.role = user.role; <-- put other properties on the session here
-      }
-      return session;
-    },
+
+       jwt({ token, user }) {
+        if (user) {
+          token.email = user.email;
+          token.name = user.name;
+          token.id = user.id;
+        }
+        return token;
+      },
+
+    // session({ session, user }) {
+    //   if (session.user) {
+    //     session.user.id = user.id;
+    //     session.user.user = user;
+    //     // session.user.role = user.role; <-- put other properties on the session here
+    //   }
+    //   return session;
+    // },
   },
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
@@ -79,15 +89,8 @@ export const authOptions: NextAuthOptions = {
           });
 
           if (user) {
-          
-            // Any object returned will be saved in `user` property of the JWT
-            
-            const checkPwd = await confirmPasswordHash(
-              password || "",
-              user.password as string
-            );
-            if (checkPwd) {
-              throw new Error("Password invalid");
+            if (password==user.password) {
+              return user
             
             } else {
               throw new Error("Password invalid");
