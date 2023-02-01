@@ -5,7 +5,7 @@ export const memberRouter = createTRPCRouter({
     getAll: protectedProcedure
         .query(({ ctx }) => {
             const {prisma}=ctx
-          return prisma.user.findMany({orderBy:{createdAt:"desc"}});
+          return prisma.user.findMany({orderBy:{createdAt:"desc"}}).then(m=>[...m,...m,...m,...m,...m,...m,...m,...m,...m,...m,...m,...m,...m,...m,...m,...m,...m,...m,...m,...m,...m,...m,...m,...m]);
         }),
 
 

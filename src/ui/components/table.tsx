@@ -1,8 +1,10 @@
 import type {User} from "@prisma/client";
-import { Table } from "antd";
+import {Button, Table, Tooltip} from "antd";
 import {type TableRowSelection} from "antd/es/table/interface";
 import {type ColumnsType} from "antd/lib/table";
 import React from "react";
+import {AiFillEdit, GrView} from "react-icons/all";
+import {DeleteOutlined} from "@ant-design/icons";
 
 interface Props<T> {
     columns: ColumnsType<T>;
@@ -24,9 +26,9 @@ const MyTable: React.FC<Props<TableType>> = ({
 
     return (
         <Table
-            size="small"
+           // size="small"
 
-            className="w-full"
+            //className="w-full"
             rowSelection={rowSelection}
             rowKey={(record) => record.id}
             {...options}
@@ -38,3 +40,25 @@ const MyTable: React.FC<Props<TableType>> = ({
 };
 
 export default MyTable;
+
+
+type TAction={
+
+    onView?: () => void;
+    onEdit?: () => void;
+    onDelete?: () => void;
+}
+export const ActionTable = ({onView,onEdit,onDelete}:TAction) => {
+    return <div className={"flex flex-row gap-2 items-center"}>
+        {onView && <Tooltip title="لترى">
+            <Button  shape="circle" icon={<GrView />} />
+        </Tooltip>}
+
+        {onEdit &&<Tooltip title="للتعديل">
+            <Button  shape="circle" icon={<AiFillEdit className={"text-blue-800"}/>} />
+        </Tooltip>}
+        {onDelete && <Tooltip title="إزالة">
+            <Button  shape="circle" icon={<DeleteOutlined className={"text-red-500"}/>} />
+        </Tooltip>}
+    </div>
+}

@@ -25,7 +25,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
                 />
             </Head>
             <ConfigProvider
-                direction='ltr'
+             direction='rtl'
                 locale={ar}
             >
                 <Component {...pageProps} />
