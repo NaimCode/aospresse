@@ -1,64 +1,99 @@
-import type {User} from "@prisma/client";
-import {Button, Table, Tooltip} from "antd";
-import {type TableRowSelection} from "antd/es/table/interface";
-import {type ColumnsType} from "antd/lib/table";
+import type { User } from "@prisma/client";
+import { Button, Dropdown, MenuProps, Table, Tooltip } from "antd";
+import { type TableRowSelection } from "antd/es/table/interface";
+import { type ColumnsType } from "antd/lib/table";
 import React from "react";
-import {AiFillEdit, GrView} from "react-icons/all";
-import {DeleteOutlined} from "@ant-design/icons";
+import { FiMoreVertical } from "react-icons/fi";
+import { GrView } from "react-icons/gr";
+import { DeleteOutlined,EyeOutlined,EditOutlined } from "@ant-design/icons";
+import { MdMore } from "react-icons/md";
 
 interface Props<T> {
-    columns: ColumnsType<T>;
-    data: T[];
-    loading: boolean;
-    rowSelection?: TableRowSelection<TableType>;
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    options?: Object;
+  columns: ColumnsType<T>;
+  data: T[];
+  loading: boolean;
+  rowSelection?: TableRowSelection<TableType>;
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  options?: Object;
 }
 
 export type TableType = User;
 const MyTable: React.FC<Props<TableType>> = ({
-                                                 columns,
-                                                 data,
-                                                 loading,
-                                                 options,
-                                                 rowSelection,
-                                             }) => {
+  columns,
+  data,
+  loading,
+  options,
+  rowSelection,
+}) => {
+  return (
+    <Table
+      // size="small"
 
-    return (
-        <Table
-           // size="small"
-
-            //className="w-full"
-            rowSelection={rowSelection}
-            rowKey={(record) => record.id}
-            {...options}
-            loading={loading}
-            columns={columns}
-            dataSource={data}
-        />
-    );
+      //className="w-full"
+      rowSelection={rowSelection}
+      rowKey={(record) => record.id}
+      {...options}
+      loading={loading}
+      columns={columns}
+      dataSource={data}
+    />
+  );
 };
 
 export default MyTable;
 
+type TAction = {
+  onView?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+};
+export const ActionTable = ({ onView, onEdit, onDelete }: TAction) => {
+  const items: MenuProps["items"] = [
+    ...(onView
+        ? [
+            {
+              onClick: onView,
 
-type TAction={
+  
+              icon: <EyeOutlined />,
+              label: "عرض",
+              key: "2",
+            },
+          ]
+        : []),
+        ...(onEdit
+            ? [
+                {
+                  onClick: onEdit,
+    
+      
+                  icon: <EditOutlined />,
+                  label: "يحرر",
+                  key: "3",
+                },
+              ]
+            : []),
+            
+    {
+      type: "divider",
+    },
 
-    onView?: () => void;
-    onEdit?: () => void;
-    onDelete?: () => void;
-}
-export const ActionTable = ({onView,onEdit,onDelete}:TAction) => {
-    return <div className={"flex flex-row gap-2 items-center"}>
-        {onView && <Tooltip title="لترى">
-            <Button  shape="circle" icon={<GrView />} />
-        </Tooltip>}
+    ...(onDelete
+      ? [
+          {
+            onClick: onDelete,
+            danger: true,
 
-        {onEdit &&<Tooltip title="للتعديل">
-            <Button  shape="circle" icon={<AiFillEdit className={"text-blue-800"}/>} />
-        </Tooltip>}
-        {onDelete && <Tooltip title="إزالة">
-            <Button  shape="circle" icon={<DeleteOutlined className={"text-red-500"}/>} />
-        </Tooltip>}
-    </div>
-}
+            icon: <DeleteOutlined />,
+            label: "يمسح",
+            key: "1",
+          },
+        ]
+      : []),
+  ];
+  return (
+    <Dropdown menu={{ items }} placement="bottomLeft">
+      <Button type="text" icon={<FiMoreVertical className="text-lg" />} />
+    </Dropdown>
+  );
+};

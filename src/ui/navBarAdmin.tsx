@@ -53,7 +53,7 @@ function NavBarAdmin() {
             onClick: () => {
                 void signOut().then(() => {
                     toast.success("تم تسجيل الخروج بنجاح")
-                    void router.replace("/login")
+                    void router.push("/login")
                 }).catch((e) => {
                     console.log(e)
                     toast.error("حدث خطأ ما")
