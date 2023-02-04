@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React, { useEffect, useState } from "react";
@@ -115,7 +117,7 @@ const Members = () => {
             data={data || []}
             // xScroll={1000}
 
-            columns={columns}
+            columns={columns as any}
             // columns={columns.filter((c)=>options.includes(c.key))}
           />
         </div>

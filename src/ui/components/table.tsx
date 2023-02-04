@@ -1,4 +1,6 @@
-import type { User } from "@prisma/client";
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import type { Category, User } from "@prisma/client";
 import { Button, Dropdown, MenuProps, Table, Tooltip } from "antd";
 import { type TableRowSelection } from "antd/es/table/interface";
 import { type ColumnsType } from "antd/lib/table";
@@ -17,7 +19,7 @@ interface Props<T> {
   options?: Object;
 }
 
-export type TableType = User;
+export type TableType = User | Category;
 const MyTable: React.FC<Props<TableType>> = ({
   columns,
   data,
