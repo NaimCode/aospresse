@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DashboardLayout from "@ui/dashboardLayout";
 import { api } from "@utils/api";
 import type { User } from "@prisma/client";
@@ -32,7 +32,25 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   };
 };
 const Members = () => {
+    const [updateMembre, setupdateMembre] = useState<User|undefined>(undefined);
   const { data, isLoading,refetch } = api.member.getAll.useQuery();
+  const {mutate:deleteMember}=api.member.delete.useMutation({
+    onSuccess:()=>{
+        toast.dismiss();
+        toast.success("تم حذف العضو بنجاح");
+        void refetch();
+        },
+    onError:()=>{
+        toast.dismiss();
+        toast.error("حدث خطأ ما");
+    },
+    onMutate:()=>{
+        toast.loading("جاري حذف العضو");
+    }
+
+
+  })
+  
   const columns: ColumnsType<User> = [
     {
       title: "الاسم و النسب",
@@ -66,13 +84,10 @@ const Members = () => {
       render: (_, d) => (
         <ActionTable
           onEdit={() => {
-            console.log(d);
+           setupdateMembre(d);
           }}
           onDelete={() => {
-            console.log(d);
-          }}
-          onView={() => {
-            console.log(d);
+            deleteMember({id:d.id})
           }}
         />
       ),
@@ -84,7 +99,7 @@ const Members = () => {
         <h1 className="text-3xl font-bold text-gray-700">أعضاء الإدارة</h1>
         <div className={""}>
           <div className={"flex flex-row-reverse items-center gap-6 py-6 "}>
-            <AddMemberDialog onAdd={()=>refetch()}/>
+            <AddMemberDialog onAdd={()=>refetch()} membre={updateMembre} onClose={()=>setupdateMembre(undefined)}/>
             <Search
               placeholder="اكتب بحثك"
               allowClear
@@ -117,24 +132,49 @@ type TMember = {
   confirmationPassword: string;
     email: string;
 };
-const AddMemberDialog = ({onAdd}:{onAdd:()=>void}) => {
+const AddMemberDialog = ({onAdd,membre,onClose}:{onAdd:()=>void,onClose:()=>void,membre:User|undefined}) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  const { handleSubmit, control, formState:{errors} } = useForm<TMember>();
+  const { handleSubmit, control, formState:{errors},setValue,reset } = useForm<TMember>();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+useEffect(()=>{
+    if(membre){
+        setIsModalOpen(true)
+        setValue("name",membre.name)
+        setValue("email",membre.email||"")
+        setValue("password",membre.password)
+        setValue("confirmationPassword","")
+
+    }
+},[membre, setValue])
 
   const showModal = () => {
     setIsModalOpen(true);
+reset()
   };
 
 
   const handleCancel = () => {
     setIsModalOpen(false);
+    onClose()
   };
 
   const handleOk = () => handleSubmit(onSubmit)()
 const {mutate:add,isLoading}=api.member.add.useMutation({
     onSuccess:()=>{
         toast.success("تمت الإضافة بنجاح")
+        setIsModalOpen(false)
+        onAdd()
+    },
+    onError:(e)=>{
+        console.log(e)
+        toast.error("حدث خطأ")
+    }
+})
+
+const {mutate:update,isLoading:updateLoading}=api.member.update.useMutation({
+    onSuccess:()=>{
+        toast.success("تم التحديث بنجاح")
         setIsModalOpen(false)
         onAdd()
     },
@@ -154,7 +194,8 @@ const onSubmit:SubmitHandler<TMember>=(data: TMember)=>{
         toast.error("كلمة السر غير متطابقة")
         return
     }
-    add({name:data.name,password:data.password,email:data.email})
+    if(membre) update({id:membre.id,name:data.name,password:data.password,email:data.email})
+    else add({name:data.name,password:data.password,email:data.email})
      
   }
   return (
@@ -168,10 +209,10 @@ const onSubmit:SubmitHandler<TMember>=(data: TMember)=>{
         يضيف
       </Button>
       <Modal
-        title="اضافة عضو جديد"
+        title={membre?"عضو التحديث":"اضافة عضو جديد"}
         open={isModalOpen}
         onOk={handleOk}
-        confirmLoading={isLoading}
+        confirmLoading={isLoading ||updateLoading}
         destroyOnClose={true}
         onCancel={handleCancel}
       >
@@ -198,7 +239,7 @@ const onSubmit:SubmitHandler<TMember>=(data: TMember)=>{
               name="password"
               defaultValue=""
               control={control}
-              render={({ field }) => <Input type="password" {...field} />}
+              render={({ field }) => <Input type={membre?"text":"password"} {...field} />}
             />
           </Form.Item>
           <Form.Item label="تأكيد" required labelCol={{ span: 5 }}>
