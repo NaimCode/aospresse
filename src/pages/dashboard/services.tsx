@@ -17,7 +17,77 @@ import Search from "antd/lib/input/Search";
 import {useForm, Controller, type SubmitHandler} from "react-hook-form";
 
 import toast from "react-hot-toast";
+import ExportButton from "@ui/exportButton";
 
+
+
+const columnsExport: ColumnsType<Service> = [
+
+            {
+                title: "للصحافيين",
+                dataIndex: "forAdult",
+
+                key: "forAdult",
+                render: (v) => <span className={"text-md font-bold"}>{v}</span>,
+            },
+            {
+                title: "النشاط",
+                width:250,
+                dataIndex: "activiteAdult",
+                key: "activiteAdult",
+            },
+            {
+                title: "الفئة",
+                dataIndex: "categorieAdult",
+                key: "categorieAdult",
+                render: (v) => v.name,
+
+    },
+    {
+        title: "",
+        dataIndex: "_",
+        key: "_",
+    },
+            {
+                title: "للاطفال",
+                dataIndex: "forChild",
+                key: "forChild",
+                render: (v) => v,
+            },
+            {
+                title: "النشاط",
+                dataIndex: "activiteChild",
+                key: "activiteChild",
+                render: (v) => v,
+
+            },
+            {
+                title: "الفئة",
+                dataIndex: "categorieChild",
+                key: "categorieChild",
+                render: (v) => v.name,
+
+
+    },
+    {
+        title: "",
+        dataIndex: "_",
+        key: "_",
+    },
+    {
+        title: "تاريخ التعديل",
+        dataIndex: "updatedAt",
+        key: "updatedAt",
+        render: (v) => moment(v).format("DD-MM-YYYY"),
+    },
+    {
+        title: "تاريخ الإنشاء",
+        dataIndex: "createdAt",
+        key: "createdAt",
+        render: (v) => moment(v).format("DD-MM-YYYY"),
+    },
+
+];
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const session = await getServerAuthSession(ctx);
 
@@ -161,6 +231,9 @@ const Services = () => {
                             className={"w-[300px]"}
                             onSearch={filter}
                         />
+                        <div className={"flex-grow"}></div>
+
+                        <ExportButton dataFilter={dataFilter} columns={columnsExport} tableName={"انشطة وخدمات الجمعية"}/>
                     </div>
 
                     <MyTable
