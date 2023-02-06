@@ -35,7 +35,12 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 };
 const Members = () => {
     const [updateMembre, setupdateMembre] = useState<User|undefined>(undefined);
-  const { data, isLoading,refetch } = api.member.getAll.useQuery();
+    const [dataFilter, setDataFilter] = useState<User[]>([]);
+  const { data, isLoading,refetch } = api.member.getAll.useQuery(undefined,{
+    onSuccess(data){
+        setDataFilter(data)
+    }
+  });
   const {mutate:deleteMember}=api.member.delete.useMutation({
     onSuccess:()=>{
         toast.dismiss();
@@ -95,6 +100,17 @@ const Members = () => {
       ),
     },
   ];
+
+  const filter = (v: string) => {
+    if(data){
+     if (!v) {
+       setDataFilter(data || [])
+       return
+     }
+     const newData = data?.filter((d) => d.name.includes(v)||d.email?.includes(v))
+     setDataFilter(newData || [])
+    }
+   }
   return (
     <DashboardLayout>
       <div className="flex w-full flex-col items-center justify-center">
@@ -108,13 +124,13 @@ const Members = () => {
               enterButton="ابحاث"
               size="large"
               className={"w-[300px]"}
-              // onSearch={onSearch}
+         onSearch={filter}
             />
           </div>
 
           <MyTable
             loading={isLoading}
-            data={data || []}
+            data={dataFilter || []}
             // xScroll={1000}
 
             columns={columns as any}
@@ -152,7 +168,8 @@ useEffect(()=>{
 
   const showModal = () => {
     setIsModalOpen(true);
-reset()
+     reset()
+
   };
 
 

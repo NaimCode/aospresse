@@ -21,6 +21,11 @@ const menuItems: TMenu[] = [
         route: "/dashboard/members"
     },
     {
+        title: "عضو",
+        icon: <TeamOutlined />,
+        route: "/dashboard/adherents"
+    },
+    {
         title: "الأعضاء",
         icon: <MdWorkOutline />,
         route: "/dashboard/services"
@@ -80,12 +85,16 @@ function NavBarAdmin() {
                 {menuItems.map((item, index) => {
                     const isCurr=router.pathname===item.route;
                     return (
-                        <div key={index} onClick={() => {
-                            void router.push(item.route)
-                        }} className={cx("flex flex-row gap-2 transform transition-all duration-500 items-center cursor-pointer",isCurr&&"text-blue-900 scale-110")}>
-                            {item.icon}
-                            <p className={cx(isCurr?"text-blue-800":"text-gray-500 ")}>{item.title}</p>
-                        </div>
+                        <>
+
+                            <div key={index} onClick={() => {
+                                void router.push(item.route)
+                            }} className={cx("flex flex-row gap-2 transform transition-all duration-500 items-center cursor-pointer",isCurr&&"text-blue-900 scale-110")}>
+                                {item.icon}
+                                <p className={cx(isCurr?"text-blue-800":"text-gray-500 ")}>{item.title}</p>
+                            </div>
+                            {index ==0 && <div className={"w-[1px] h-[30px] bg-gray-300"}/>}
+                        </>
                     )
                 })
                 }

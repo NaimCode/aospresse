@@ -26,12 +26,62 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
-model Category{
-  id        String   @id @default(cuid())
-  name      String   @unique
+model Category {
+  id          String  @id @default(cuid())
+  name        String  @unique
   description String?
-  color     String?
-  icon String?
+  color       String?
+  icon        String?
+
+  servicesChild Service[] @relation(name: "categorieChild")
+  servicesAdult Service[] @relation(name: "categorieAdult")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Adherent {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  //
+  sexe          Sexe
+  dateNaissance String?
+  lieuNaissance String?
+
+  tel String?
+
+  email        String?
+  profession   String?
+  lieuTravail  String?
+  cin          String?
+  identifiant  String?
+  anneeTravail String?
+
+  dateAbonnement String?
+}
+
+model Service {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  forChild String?
+  forAdult String?
+
+  activiteChild String?
+  activiteAdult String?
+
+  categorieIdChild String
+  categorieIdAdult String
+
+  categorieChild Category @relation(fields: [categorieIdChild], references: [id], name: "categorieChild")
+
+  categorieAdult Category @relation(fields: [categorieIdAdult], references: [id], name: "categorieAdult")
+}
+
+enum Sexe {
+  M
+  F
 }

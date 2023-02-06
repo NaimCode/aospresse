@@ -11,17 +11,19 @@ import type { Category } from "@prisma/client";
 import { type ColumnsType } from "antd/lib/table";
 import MyTable, { ActionTable } from "@ui/components/table";
 import moment from "moment";
-import { Button, Form, Input, Modal, Radio, Tag } from "antd";
+import { Button, Form, Input, Modal, Radio, Switch, Tag } from "antd";
 import { PlusOutlined, CheckOutlined } from "@ant-design/icons";
 import type { GetServerSideProps } from "next";
 import { getServerAuthSession } from "@server/auth";
-import Search from "antd/lib/input/Search";
+
 import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 
 import toast from "react-hot-toast";
 import TextArea from "antd/lib/input/TextArea";
 import { COLORS } from "@data/index";
 import cx from "classnames";
+import AppSearch from "@ui/search";
+import Search from "antd/lib/input/Search";
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession(ctx);
 
@@ -40,7 +42,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 };
 const Category = () => {
   const [updateitem, setupdateitem] = useState<Category | undefined>(undefined);
-  const { data, isLoading, refetch } = api.category.getAll.useQuery();
+  const { data, isLoading, refetch } = api.category.getAll.useQuery(undefined,{
+    onSuccess(data) {
+      setDataFilter(data)
+    },
+  });
   const { mutate: deleteIt } = api.category.delete.useMutation({
     onSuccess: () => {
       toast.dismiss();
@@ -63,7 +69,7 @@ const Category = () => {
         key: "color",
         render: (v) =>  <div
         style={{ backgroundColor: v }}
-        className={"h-10 w-10 rounded-xl "}
+        className={"h-6 w-6 rounded-md "}
       />,
       },
     {
@@ -75,16 +81,16 @@ const Category = () => {
     {
       title: "الوصف",
       dataIndex: "description",
-      
+      width: 400,
       key: "description",
-      render: (v) => <p className={"opacity-70 max-w-[400px]"}>{v}</p>,
+      render: (v) => <p className={"opacity-70"}>{v}</p>,
     },
 
     {
       title: "تاريخ الإنشاء",
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (v) => moment(v).format("L"),
+      render: (v) => <span className={"opacity-60 text-[12px]"}>{moment(v).format("DD-MM-YYYY")}</span>,
     },
 
     {
@@ -103,6 +109,18 @@ const Category = () => {
       ),
     },
   ];
+  const [dataFilter, setDataFilter] = useState<Category[]>([])
+
+  const filter = (v: string) => {
+   if(data){
+    if (!v) {
+      setDataFilter(data || [])
+      return
+    }
+    const newData = data?.filter((d) => d.name.includes(v)||d.description?.includes(v))
+    setDataFilter(newData || [])
+   }
+  }
   return (
     <DashboardLayout>
       <div className="flex w-full flex-col items-center justify-center">
@@ -114,19 +132,20 @@ const Category = () => {
               item={updateitem}
               onClose={() => setupdateitem(undefined)}
             />
-            <Search
-              placeholder="اكتب بحثك"
-              allowClear
-              enterButton="ابحاث"
-              size="large"
-              className={"w-[300px]"}
-              // onSearch={onSearch}
-            />
+          <Search
+      placeholder="اكتب بحثك"
+      allowClear
+      enterButton="ابحاث"
+      size="large"
+      className={"w-[300px]"}
+      onSearch={filter}
+    />
+
           </div>
 
           <MyTable
             loading={isLoading}
-            data={data || []}
+            data={dataFilter || []}
             // xScroll={1000}
 
             columns={columns as any}
@@ -166,19 +185,22 @@ const MyDialog = ({
     defaultValues:{color:COLORS[0]}
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+const [hasColor,setHasColor]=useState(true)
   useEffect(() => {
     if (item) {
       setIsModalOpen(true);
       setValue("name", item.name);
       setValue("description", item.description || undefined);
       setValue("color", item.color || undefined);
+      setHasColor(!!item.color)
     }
   }, [item, setValue]);
 
   const showModal = () => {
     setIsModalOpen(true);
     reset();
+    onClose()
+    
   };
 
   const handleCancel = () => {
@@ -223,13 +245,14 @@ const MyDialog = ({
         id: item.id,
         name: data.name,
         description: data.description,
-        color: data.color,
+        color: hasColor? data.color:undefined,
       });
+
     else
       add({
         name: data.name,
         description: data.description,
-        color: data.color,
+        color: hasColor? data.color:undefined,
       });
   };
 
@@ -268,7 +291,9 @@ const MyDialog = ({
               render={({ field }) => <TextArea rows={4} {...field} />}
             />
           </Form.Item>
-          <div className="flex flex-row justify-end gap-2 pt-3">
+       
+          <Switch className="mr-[100px] mt-1" checkedChildren="لون" unCheckedChildren="لون" checked={hasColor} onChange={(e)=>setHasColor(e)} />
+          <div className={cx("flex flex-row justify-end gap-2 pt-1",hasColor||"hidden")}>
             
             {COLORS.map((c) => {
               const selected = watch("color") === c;
