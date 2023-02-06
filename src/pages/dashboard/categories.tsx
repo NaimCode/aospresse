@@ -99,7 +99,12 @@ const Category = () => {
             key: "createdAt",
             render: (v) => <span className={"opacity-60 text-[12px]"}>{moment(v).format("DD-MM-YYYY")}</span>,
         },
-
+        {
+            title: "تاريخ التعديل",
+            dataIndex: "updatedAt",
+            key: "updatedAt",
+            render: (v) => <span className={"opacity-60 text-[12px]"}>{moment(v).format("DD-MM-YYYY")}</span>,
+        },
         {
             title: "",
             dataIndex: "action",
@@ -159,7 +164,14 @@ const Category = () => {
                         />
                         <div className={"flex-grow"}></div>
 
-                        <ExportButton dataFilter={dataFilter} columns={columns} tableName={"إدارة الفئة"}/>
+                        <ExportButton data={dataFilter.map(d=>{
+                            return {
+                                "العنوان":d.name,
+                                "الوصف":d.description,
+                                "تاريخ الإنشاء":moment(d.createdAt).format("DD-MM-YYYY"),
+                                "تاريخ التعديل":moment(d.updatedAt).format("DD-MM-YYYY"),
+                            }
+                        })} tableName={"إدارة الفئة"}/>
 
                     </div>
 

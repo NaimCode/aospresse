@@ -20,27 +20,26 @@ import toast from "react-hot-toast";
 import ExportButton from "@ui/exportButton";
 
 
-
 const columnsExport: ColumnsType<Service> = [
 
-            {
-                title: "للصحافيين",
-                dataIndex: "forAdult",
+    {
+        title: "للصحافيين",
+        dataIndex: "forAdult",
 
-                key: "forAdult",
-                render: (v) => <span className={"text-md font-bold"}>{v}</span>,
-            },
-            {
-                title: "النشاط",
-                width:250,
-                dataIndex: "activiteAdult",
-                key: "activiteAdult",
-            },
-            {
-                title: "الفئة",
-                dataIndex: "categorieAdult",
-                key: "categorieAdult",
-                render: (v) => v.name,
+        key: "forAdult",
+        render: (v) => <span className={"text-md font-bold"}>{v}</span>,
+    },
+    {
+        title: "النشاط",
+        width: 250,
+        dataIndex: "activiteAdult",
+        key: "activiteAdult",
+    },
+    {
+        title: "الفئة",
+        dataIndex: "categorieAdult",
+        key: "categorieAdult",
+        render: (v) => v.name,
 
     },
     {
@@ -48,24 +47,24 @@ const columnsExport: ColumnsType<Service> = [
         dataIndex: "_",
         key: "_",
     },
-            {
-                title: "للاطفال",
-                dataIndex: "forChild",
-                key: "forChild",
-                render: (v) => v,
-            },
-            {
-                title: "النشاط",
-                dataIndex: "activiteChild",
-                key: "activiteChild",
-                render: (v) => v,
+    {
+        title: "للاطفال",
+        dataIndex: "forChild",
+        key: "forChild",
+        render: (v) => v,
+    },
+    {
+        title: "النشاط",
+        dataIndex: "activiteChild",
+        key: "activiteChild",
+        render: (v) => v,
 
-            },
-            {
-                title: "الفئة",
-                dataIndex: "categorieChild",
-                key: "categorieChild",
-                render: (v) => v.name,
+    },
+    {
+        title: "الفئة",
+        dataIndex: "categorieChild",
+        key: "categorieChild",
+        render: (v) => v.name,
 
 
     },
@@ -132,17 +131,17 @@ const Services = () => {
     const columns: ColumnsType<Service> = [
         {
             title: "بالغ",
-            children:[
+            children: [
                 {
                     title: "للصحافيين",
                     dataIndex: "forAdult",
 
                     key: "forAdult",
                     render: (v) => <span className={"text-md font-bold"}>{v}</span>,
-            },
+                },
                 {
                     title: "النشاط",
-                    width:250,
+                    width: 250,
                     dataIndex: "activiteAdult",
                     key: "activiteAdult",
                 },
@@ -157,7 +156,7 @@ const Services = () => {
         },
         {
             title: "طفل",
-            children:[
+            children: [
                 {
                     title: "للاطفال",
                     dataIndex: "forChild",
@@ -166,7 +165,7 @@ const Services = () => {
                 },
                 {
                     title: "النشاط",
-                    width:250,
+                    width: 250,
                     dataIndex: "activiteChild",
                     key: "activiteChild",
                 },
@@ -233,7 +232,23 @@ const Services = () => {
                         />
                         <div className={"flex-grow"}></div>
 
-                        <ExportButton dataFilter={dataFilter} columns={columnsExport} tableName={"انشطة وخدمات الجمعية"}/>
+                        <ExportButton
+                            tableName={"انشطة وخدمات الجمعية"}
+                            data={dataFilter.map((d) => {
+                                return {
+                                    "للاطفال": d.forChild,
+                                    "النشاط للاطفال": d.activiteChild,
+                                    "الفئة للاطفال": (d as any).categorieChild.name,
+                                    " ": "",
+                                    "للبالغين": d.forAdult,
+                                    "النشاط للبالغين": d.activiteAdult,
+                                    "الفئة للبالغين": (d as any).categorieAdult.name,
+                                    "": "",
+                                    "تاريخ الإنشاء": moment(d.createdAt).format("DD-MM-YYYY"),
+                                    "تاريخ التعديل": moment(d.updatedAt).format("DD-MM-YYYY"),
+                                }
+                            })}
+                        />
                     </div>
 
                     <MyTable
