@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
@@ -20,73 +21,6 @@ import toast from "react-hot-toast";
 import ExportButton from "@ui/exportButton";
 
 
-const columnsExport: ColumnsType<Service> = [
-
-    {
-        title: "للصحافيين",
-        dataIndex: "forAdult",
-
-        key: "forAdult",
-        render: (v) => <span className={"text-md font-bold"}>{v}</span>,
-    },
-    {
-        title: "النشاط",
-        width: 250,
-        dataIndex: "activiteAdult",
-        key: "activiteAdult",
-    },
-    {
-        title: "الفئة",
-        dataIndex: "categorieAdult",
-        key: "categorieAdult",
-        render: (v) => v.name,
-
-    },
-    {
-        title: "",
-        dataIndex: "_",
-        key: "_",
-    },
-    {
-        title: "للاطفال",
-        dataIndex: "forChild",
-        key: "forChild",
-        render: (v) => v,
-    },
-    {
-        title: "النشاط",
-        dataIndex: "activiteChild",
-        key: "activiteChild",
-        render: (v) => v,
-
-    },
-    {
-        title: "الفئة",
-        dataIndex: "categorieChild",
-        key: "categorieChild",
-        render: (v) => v.name,
-
-
-    },
-    {
-        title: "",
-        dataIndex: "_",
-        key: "_",
-    },
-    {
-        title: "تاريخ التعديل",
-        dataIndex: "updatedAt",
-        key: "updatedAt",
-        render: (v) => moment(v).format("DD-MM-YYYY"),
-    },
-    {
-        title: "تاريخ الإنشاء",
-        dataIndex: "createdAt",
-        key: "createdAt",
-        render: (v) => moment(v).format("DD-MM-YYYY"),
-    },
-
-];
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const session = await getServerAuthSession(ctx);
 
@@ -208,8 +142,7 @@ const Services = () => {
                 return
             }
             const newData = (data || []).filter((d) => {
-                // @ts-ignore
-                return d.forChild.includes(v) || d.forAdult.includes(v) || d.activiteAdult.includes(v) || d.activiteChild.includes(v);
+                return d.forChild?.includes(v) || d.forAdult?.includes(v) || d.activiteAdult?.includes(v) || d.activiteChild?.includes(v);
             });
             setDataFilter(newData || [])
         }

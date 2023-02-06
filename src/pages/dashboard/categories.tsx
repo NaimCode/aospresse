@@ -7,12 +7,12 @@
 import React, {useEffect, useRef, useState} from "react";
 import DashboardLayout from "@ui/dashboardLayout";
 import {api} from "@utils/api";
-import type {Category} from "@prisma/client";
+import  {type Category} from "@prisma/client";
 import {type ColumnsType} from "antd/lib/table";
 import MyTable, {ActionTable} from "@ui/components/table";
 import moment from "moment";
-import {Button, Dropdown, Form, Input, MenuProps, Modal, Radio, Switch, Tag} from "antd";
-import {PlusOutlined, CheckOutlined, EditOutlined, FileExcelOutlined, FilePdfOutlined} from "@ant-design/icons";
+import {Button, Form, Input, Modal, Switch} from "antd";
+import {PlusOutlined, CheckOutlined} from "@ant-design/icons";
 import type {GetServerSideProps} from "next";
 import {getServerAuthSession} from "@server/auth";
 
@@ -22,11 +22,8 @@ import toast from "react-hot-toast";
 import TextArea from "antd/lib/input/TextArea";
 import {COLORS} from "@data/index";
 import cx from "classnames";
-import AppSearch from "@ui/search";
 import Search from "antd/lib/input/Search";
 
-import {useReactToPrint} from 'react-to-print';
-import tableExport from "antd-table-export";
 import ExportButton from "@ui/exportButton";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
@@ -134,9 +131,7 @@ const Category = () => {
         }
     }
     const componentRef = useRef<HTMLDivElement>(null);
-    const handlePrint = useReactToPrint({
-        content: () => componentRef.current,
-    });
+
 
 
     return (

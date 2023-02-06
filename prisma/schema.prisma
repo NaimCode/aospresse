@@ -46,20 +46,30 @@ model Adherent {
   updatedAt DateTime @updatedAt
 
   //
+  name          String
   sexe          Sexe
+
   dateNaissance String?
   lieuNaissance String?
+  familyStatus FamilyStatus
+  children      Int?
 
   tel String?
 
-  email        String?
+  email        String
   profession   String?
   lieuTravail  String?
-  cin          String?
+  cin          String
   identifiant  String?
   anneeTravail String?
 
-  dateAbonnement String?
+  isPaid Boolean @default(false)
+
+  dateDebutAbonnement  String?
+  dateNouvelAbonnement String?
+
+  photo AssetImage?
+  services Service[]
 }
 
 model Service {
@@ -79,6 +89,22 @@ model Service {
   categorieChild Category @relation(fields: [categorieIdChild], references: [id], name: "categorieChild")
 
   categorieAdult Category @relation(fields: [categorieIdAdult], references: [id], name: "categorieAdult")
+
+  adherents Adherent[]
+}
+
+model AssetImage {
+  name       String
+  fileKey    String   @id @unique
+  url        String
+  //
+  adherentId String @unique
+  adherent   Adherent @relation(fields: [adherentId], references: [id])
+}
+
+enum FamilyStatus {
+  C
+  M
 }
 
 enum Sexe {
