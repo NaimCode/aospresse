@@ -1,4 +1,5 @@
 import { createTRPCRouter, protectedProcedure } from "@server/api/trpc";
+import moment from "moment";
 import { z } from "zod";
 
 const ZAdherent = z.object({
@@ -7,7 +8,7 @@ const ZAdherent = z.object({
   sexe: z.enum(["M", "F"]),
   dateNaissance: z.string().optional(),
   lieuNaissance: z.string().optional(),
-  familyStatus: z.enum(["C", "M"]),
+  familyStatus: z.enum(["C", "M","D"]),
   children: z.number().optional(),
   tel: z.string().optional(),
   profession: z.string().optional(),
@@ -16,8 +17,9 @@ const ZAdherent = z.object({
   identifiant: z.string().optional(),
   anneeTravail: z.string().optional(),
   isPaid: z.boolean(),
-  dateDebutAbonnement: z.string().optional(),
-  dateNouvelAbonnement: z.string().optional(),
+  sifa:z.enum(['A','P']),
+  photoId: z.string(),
+  dateDebutAbonnement: z.string(),
   services: z.array(z.object({ id: z.string() })),
 });
 export const adherentRouter = createTRPCRouter({
@@ -29,9 +31,13 @@ export const adherentRouter = createTRPCRouter({
     });
   }),
   add: protectedProcedure.input(ZAdherent).mutation(({ input, ctx }) => {
+
+    const dateNouvelAbonnement = moment(input.dateDebutAbonnement).add(1, "year").format("DD-MM-YYYY");
     return ctx.prisma.adherent.create({
       data: {
         ...input,
+        dateNouvelAbonnement,
+
         services: {
           connect: input.services,
         },
@@ -49,16 +55,19 @@ export const adherentRouter = createTRPCRouter({
 
     .input(z.object({ id: z.string() }).merge(ZAdherent))
 
-    .mutation(({ input, ctx }) =>
-      ctx.prisma.adherent.update({
+    .mutation(({ input, ctx }) =>{
+      const dateNouvelAbonnement = moment(input.dateDebutAbonnement).add(1, "year").format("DD-MM-YYYY");
+      return ctx.prisma.adherent.update({
         where: { id: input.id },
         data: {
           ...input,
+          dateNouvelAbonnement,
           services: {
             connect: input.services,
           },
         },
       })
+    }
     ),
 
   addService: protectedProcedure

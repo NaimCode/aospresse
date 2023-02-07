@@ -33,8 +33,7 @@ model Category {
   color       String?
   icon        String?
 
-  servicesChild Service[] @relation(name: "categorieChild")
-  servicesAdult Service[] @relation(name: "categorieAdult")
+  services Service[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -62,13 +61,13 @@ model Adherent {
   cin          String
   identifiant  String?
   anneeTravail String?
-
+  sifa        Sifa
   isPaid Boolean @default(false)
 
   dateDebutAbonnement  String?
   dateNouvelAbonnement String?
 
-  photo AssetImage?
+  photoId String
   services Service[]
 }
 
@@ -77,34 +76,25 @@ model Service {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  forChild String?
-  forAdult String?
-
-  activiteChild String?
-  activiteAdult String?
-
-  categorieIdChild String
-  categorieIdAdult String
-
-  categorieChild Category @relation(fields: [categorieIdChild], references: [id], name: "categorieChild")
-
-  categorieAdult Category @relation(fields: [categorieIdAdult], references: [id], name: "categorieAdult")
+ activite String
+ description String?
+ forChild Boolean @default(false)
+ categoryId String
+ category   Category @relation(fields: [categoryId], references: [id])
 
   adherents Adherent[]
 }
 
-model AssetImage {
-  name       String
-  fileKey    String   @id @unique
-  url        String
-  //
-  adherentId String @unique
-  adherent   Adherent @relation(fields: [adherentId], references: [id])
-}
 
+
+enum Sifa{
+  A
+  P
+}
 enum FamilyStatus {
   C
   M
+  D
 }
 
 enum Sexe {

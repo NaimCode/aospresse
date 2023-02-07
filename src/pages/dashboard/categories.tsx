@@ -312,7 +312,7 @@ const MyDialog = ({
                             render={({field}) => <Input {...field} />}
                         />
                     </Form.Item>
-                    <Form.Item label="بريد إلكتروني" required labelCol={{span: 5}}>
+                    <Form.Item label="وصف" required labelCol={{span: 5}}>
                         <Controller
                             name="description"
                             defaultValue=""

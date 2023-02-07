@@ -21,12 +21,12 @@ const menuItems: TMenu[] = [
         route: "/dashboard/members"
     },
     {
-        title: "عضو",
+        title: "أعضاء",
         icon: <TeamOutlined />,
         route: "/dashboard/adherents"
     },
     {
-        title: "الأعضاء",
+        title: "خدمات",
         icon: <MdWorkOutline />,
         route: "/dashboard/services"
     },

@@ -74,7 +74,23 @@ const Services = () => {
     },
   });
 
-  const columns: ColumnsType<Adherent> = [];
+  const columns: ColumnsType<Adherent> = [
+    {
+      title: "",
+      dataIndex: "action",
+      key: "action",
+      render: (_, d) => (
+          <ActionTable
+              onEdit={() => {
+                setupdateMembre(d);
+              }}
+              onDelete={() => {
+                deleteMember({id: d.id});
+              }}
+          />
+      ),
+  },
+  ];
 
   const filter = (v: string) => {
     if (data) {
@@ -141,7 +157,8 @@ type TMember = {
   sexe: "M" | "F";
   dateNaissance?: string;
   lieuNaissance?: string;
-  familyStatus: "C" | "M";
+  familyStatus: "C" | "M" | "D";
+  sifa: "A" | "P";
   children?: number;
   tel?: string;
   profession?: string;
@@ -150,9 +167,9 @@ type TMember = {
   identifiant?: string;
   anneeTravail?: string;
   isPaid: boolean;
-  dateDebutAbonnement?: string;
-  dateNouvelAbonnement?: string;
+  dateDebutAbonnement: string;
   services: Service[];
+  photoId: string;
 };
 const AddMemberDialog = ({
   onAdd,
@@ -164,6 +181,7 @@ const AddMemberDialog = ({
   membre: Adherent | undefined;
 }) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+
   const {
     handleSubmit,
     control,
@@ -173,6 +191,7 @@ const AddMemberDialog = ({
     watch,
   } = useForm<TMember>();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (membre) {
@@ -191,11 +210,11 @@ const AddMemberDialog = ({
       setValue("identifiant", membre.identifiant || undefined);
       setValue("anneeTravail", membre.anneeTravail || undefined);
       setValue("isPaid", membre.isPaid);
-      setValue("dateDebutAbonnement", membre.dateDebutAbonnement || undefined);
-      setValue(
-        "dateNouvelAbonnement",
-        membre.dateNouvelAbonnement || undefined
-      );
+      setValue("photoId", membre.photoId)
+      //FixMe: fix date
+      setValue("dateDebutAbonnement", membre.dateDebutAbonnement || "");
+      setValue("sifa", membre.sifa);
+
       setValue("services", (membre as any).services);
     }
   }, [membre, setValue]);
@@ -237,6 +256,10 @@ const AddMemberDialog = ({
     });
 
   const onSubmit: SubmitHandler<TMember> = (data: TMember) => {
+    if (uploading) {
+      toast.error("يجب انتظار انتهاء رفع الصورة");
+      return;
+    }
     if (
       !data.name ||
       !data.email ||
@@ -247,7 +270,12 @@ const AddMemberDialog = ({
       toast.error("يجب ملئ جميع الحقول");
       return;
     }
-
+    if (
+      !data.photoId
+    ) {
+      toast.error("يجب اضافة صورة");
+      return;
+    }
     if (membre)
       update({
         id: membre.id,
@@ -265,8 +293,9 @@ const AddMemberDialog = ({
         identifiant: data.identifiant,
         anneeTravail: data.anneeTravail,
         isPaid: data.isPaid,
+        sifa: data.sifa,
+        photoId: data.photoId,
         dateDebutAbonnement: data.dateDebutAbonnement,
-        dateNouvelAbonnement: data.dateNouvelAbonnement,
         services: data.services,
       });
     else
@@ -286,7 +315,8 @@ const AddMemberDialog = ({
         anneeTravail: data.anneeTravail,
         isPaid: data.isPaid,
         dateDebutAbonnement: data.dateDebutAbonnement,
-        dateNouvelAbonnement: data.dateNouvelAbonnement,
+        sifa: data.sifa,
+        photoId: data.photoId,
         services: data.services,
       });
   };
@@ -310,27 +340,29 @@ const AddMemberDialog = ({
         confirmLoading={isLoading || updateLoading}
         destroyOnClose={true}
         width={900}
-        className="w-screen h-screen"
+        className="h-screen w-screen"
         onCancel={handleCancel}
       >
         <div className="flex flex-row gap-6">
           <div className="w-1/2 space-y-3 py-6">
-          <Form.Item label="الجنس" required labelCol={{ span: 7 }}>
-            <MyUpload/>
-          </Form.Item>
             <Form.Item label="صورة" required labelCol={{ span: 7 }}>
+              <MyUpload onSuccess={(key:string)=>setValue("photoId",key)} isUploading={uploading} setUploading={(b:boolean)=>setUploading(b)}/>
+            </Form.Item>
+            <Form.Item label="الإسم واللقب" required labelCol={{ span: 7 }}>
               <Controller
                 name="name"
-                
                 defaultValue=""
                 control={control}
-                render={({ field }) => <Input status={errors.name&&"error"} {...field} />}
+                render={({ field }) => (
+                  <Input status={errors.name && "error"} {...field} />
+                )}
               />
             </Form.Item>
             <Form.Item label="الجنس" labelCol={{ span: 7 }}>
               <Controller
                 name="sexe"
                 control={control}
+                defaultValue={"M"}
                 render={({ field }) => (
                   <Radio.Group {...field}>
                     <Radio value={"M"}>ذكر</Radio>
@@ -369,6 +401,7 @@ const AddMemberDialog = ({
                   <Radio.Group {...field}>
                     <Radio value={"C"}>عازب</Radio>
                     <Radio value={"M"}>متزوج</Radio>
+                    <Radio value={"D"}>مطلق</Radio>
                   </Radio.Group>
                 )}
               />
@@ -394,6 +427,7 @@ const AddMemberDialog = ({
             <Form.Item label="للاطفال" labelCol={{ span: 7 }}>
               <DatePicker
                 className="w-full"
+                  // value={dayjs}// Dayjswatch("dateNaissance")}
                 onChange={(e) =>
                   setValue("dateNaissance", e?.format("dd-mm-yyyy"))
                 }
@@ -431,6 +465,29 @@ const AddMemberDialog = ({
             </div>
 
             <div className="flex flex-row gap-2">
+              <Form.Item label="المهنة" className="w-1/2">
+                <Controller
+                  name="profession"
+                  defaultValue=""
+                  control={control}
+                  render={({ field }) => <Input {...field} />}
+                />
+              </Form.Item>
+              <Form.Item
+                label="المؤسسة المشغلة"
+                labelCol={{ span: 11 }}
+                className="w-1/2"
+              >
+                <Controller
+                  name="lieuTravail"
+                  defaultValue=""
+                  control={control}
+                  render={({ field }) => <Input {...field} />}
+                />
+              </Form.Item>
+            </div>
+
+            <div className="flex flex-row gap-2">
               <Form.Item label="سنة من الخبرة" className="w-1/2">
                 <Controller
                   name="anneeTravail"
@@ -440,45 +497,24 @@ const AddMemberDialog = ({
                 />
               </Form.Item>
               <Form.Item
-                label="مكان الازدياد"
-                labelCol={{ span: 9 }}
+                label="تاريخ الانخراط "
                 className="w-1/2"
-              >
-                <Controller
-                  name="lieuNaissance"
-                  defaultValue=""
-                  control={control}
-                  render={({ field }) => <Input {...field} />}
-                />
-              </Form.Item>
-            </div>
-
-            <div className="flex flex-row gap-2">
-              <Form.Item label="تاريخ الانخراط " className="w-1/2" labelCol={{ span: 10 }}>
-                <DatePicker
-                  className="w-full"
-                  onChange={(e) =>
-                    setValue("dateDebutAbonnement", e?.format("dd-mm-yyyy"))
-                  }
-                />
-              </Form.Item>
-              <Form.Item
-                label="تاريخ اعادة الانخراط"
-                labelCol={{ span: 14 }}
-                className="w-1/2"
+                labelCol={{ span: 10 }}
               >
                 <DatePicker
                   className="w-full"
-                  onChange={(e) =>
-                    setValue("dateNouvelAbonnement", e?.format("dd-mm-yyyy"))
-                  }
+                  onChange={(e) => {
+                    if (e) {
+                      setValue("dateDebutAbonnement", e.format("dd-mm-yyyy"));
+                    }
+                  }}
                 />
               </Form.Item>
             </div>
             <Form.Item
               required
               label="الوضعية الاجتماعية"
-              labelCol={{ span: 7 }}
+              labelCol={{ span: 0 }}
             >
               <Controller
                 name="isPaid"
@@ -492,13 +528,25 @@ const AddMemberDialog = ({
                 )}
               />
             </Form.Item>
+            <Form.Item label="الصفة" labelCol={{ span: 7 }}>
+              <Controller
+                name="sifa"
+                control={control}
+                defaultValue="P"
+                render={({ field }) => (
+                  <Radio.Group {...field}>
+                    <Radio value={"A"}>منتسب</Radio>
+                    <Radio value={"P"}>مهني</Radio>
+                  </Radio.Group>
+                )}
+              />
+            </Form.Item>
 
-            <Form.Item label="نوع النشاط" required labelCol={{ span: 5 }}>
+            <Form.Item label="نوع النشاط" required labelCol={{ span: 7 }}>
               <Select
                 optionFilterProp="children"
                 maxTagCount={"responsive"}
                 mode={"multiple"}
-                
                 onChange={(value) =>
                   setValue(
                     "services",
@@ -510,7 +558,7 @@ const AddMemberDialog = ({
                 tagRender={(props) => <Tag color="blue" {...props} />}
                 loading={gettingService}
                 options={services?.map((c) => ({
-                  label: c.forChild + " | " + c.forAdult,
+                  label: c.activite,
                   value: c.id,
                 }))}
               />
@@ -531,5 +579,6 @@ const AddMemberDialog = ({
   loading={gettingCat}
   options={categories?.map((c) => ({ label: c.name, value: c.id }))}
 />
-</Form.Item>  */
+  </Form.Item> 
+ */
 }

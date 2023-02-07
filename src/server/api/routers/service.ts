@@ -4,17 +4,15 @@ import {z} from "zod";
 export const serviceRouter = createTRPCRouter({
     getAll: protectedProcedure.query(({ctx}) => {
         const {prisma} = ctx;
-        return prisma.service.findMany({include:{categorieAdult:true,categorieChild:true},orderBy: {createdAt: "desc"}});
+        return prisma.service.findMany({include:{category:true},orderBy: {createdAt: "desc"}});
     }),
     add: protectedProcedure
         .input(
             z.object({
-                activiteChild: z.string().trim(),
-                activiteAdult: z.string().trim(),
-                forChild: z.string().trim(),
-                forAdult: z.string().trim(),
-                categorieIdChild: z.string(),
-                categorieIdAdult: z.string(),
+                activite: z.string().trim(),
+                forChild: z.boolean(),
+                categoryId: z.string(),
+                description:z.string().optional(),
             })
         )
         .mutation(({input, ctx}) =>
@@ -34,12 +32,10 @@ export const serviceRouter = createTRPCRouter({
         .input(
             z.object({
                 id: z.string(),
-                activiteChild: z.string().trim(),
-                activiteAdult: z.string().trim(),
-                forChild: z.string().trim(),
-                forAdult: z.string().trim(),
-                categorieIdChild: z.string(),
-                categorieIdAdult: z.string(),
+                activite: z.string().trim(),
+                forChild: z.boolean(),
+                categoryId: z.string(),
+                description:z.string().optional(),
             })
         )
         .mutation(({input, ctx}) =>

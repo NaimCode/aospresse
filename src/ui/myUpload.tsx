@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import React, { useState } from 'react';
@@ -7,6 +9,7 @@ import type { UploadChangeParam } from 'antd/es/upload';
 import type { RcFile, UploadFile, UploadProps } from 'antd/es/upload/interface';
 import ImgCrop from 'antd-img-crop';
 import { env } from '@env/client.mjs';
+import { toast } from 'react-hot-toast';
 
 
 
@@ -24,27 +27,30 @@ const getBase64 = (img: RcFile, callback: (url: string) => void) => {
   const beforeUpload = (file: RcFile) => {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
-      message.error('You can only upload JPG/PNG file!');
+      toast.error('JPG / PNG يمكنك فقط تحميل ملف ');
     }
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
-      message.error('Image must smaller than 2MB!');
+     toast.error("يجب أن يكون حجم الصورة أصغر من 2 ميغا بايت");
     }
     return isJpgOrPng && isLt2M;
   };
-const MyUpload: React.FC = () => {
-    const [loading, setLoading] = useState(false);
+const MyUpload = ({onSuccess,isUploading,setUploading}:{onSuccess:(key:string)=>void,setUploading:(b:boolean)=>void,isUploading:boolean}) => {
+  
     const [imageUrl, setImageUrl] = useState<string>();
   
     const handleChange: UploadProps['onChange'] = (info: UploadChangeParam<UploadFile>) => {
       if (info.file.status === 'uploading') {
-        setLoading(true);
+        setUploading(true);
         return;
       }
       if (info.file.status === 'done') {
         // Get this url from response in real world.
+        console.log("file",info.file.response)
+        onSuccess(info.file.response.public_id)
         getBase64(info.file.originFileObj as RcFile, (url) => {
-          setLoading(false);
+          
+          setUploading(false);
           setImageUrl(url);
         });
       }
@@ -52,7 +58,7 @@ const MyUpload: React.FC = () => {
 
   const uploadButton = (
     <div>
-      {loading ? <LoadingOutlined /> : <PlusOutlined />}
+      {isUploading ? <LoadingOutlined /> : <PlusOutlined />}
       <div style={{ marginTop: 8 }}>تحميل</div>
     </div>
   );
