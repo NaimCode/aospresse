@@ -32,6 +32,7 @@ import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 
 import toast from "react-hot-toast";
 import ExportButton from "@ui/exportButton";
+import MyUpload from "@ui/myUpload";
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession(ctx);
 
@@ -308,12 +309,16 @@ const AddMemberDialog = ({
         onOk={handleOk}
         confirmLoading={isLoading || updateLoading}
         destroyOnClose={true}
-        width={800}
+        width={900}
+        className="w-screen h-screen"
         onCancel={handleCancel}
       >
         <div className="flex flex-row gap-6">
           <div className="w-1/2 space-y-3 py-6">
-            <Form.Item label="الإسم واللقب" required labelCol={{ span: 7 }}>
+          <Form.Item label="الجنس" required labelCol={{ span: 7 }}>
+            <MyUpload/>
+          </Form.Item>
+            <Form.Item label="صورة" required labelCol={{ span: 7 }}>
               <Controller
                 name="name"
                 
@@ -405,7 +410,7 @@ const AddMemberDialog = ({
           </div>
 
           <Divider type="vertical" className="h-auto" />
-          <div className="w-1/2 space-y-3 py-6">
+          <div className="w-1/2 py-6">
             <div className="flex flex-row gap-2">
               <Form.Item label="رقم البطاقة الوطنية" required>
                 <Controller
@@ -436,7 +441,7 @@ const AddMemberDialog = ({
               </Form.Item>
               <Form.Item
                 label="مكان الازدياد"
-                labelCol={{ span: 7 }}
+                labelCol={{ span: 9 }}
                 className="w-1/2"
               >
                 <Controller
@@ -449,7 +454,7 @@ const AddMemberDialog = ({
             </div>
 
             <div className="flex flex-row gap-2">
-              <Form.Item label="تاريخ الانخراط " className="w-1/2">
+              <Form.Item label="تاريخ الانخراط " className="w-1/2" labelCol={{ span: 10 }}>
                 <DatePicker
                   className="w-full"
                   onChange={(e) =>
@@ -459,7 +464,7 @@ const AddMemberDialog = ({
               </Form.Item>
               <Form.Item
                 label="تاريخ اعادة الانخراط"
-                labelCol={{ span: 7 }}
+                labelCol={{ span: 14 }}
                 className="w-1/2"
               >
                 <DatePicker
@@ -493,6 +498,7 @@ const AddMemberDialog = ({
                 optionFilterProp="children"
                 maxTagCount={"responsive"}
                 mode={"multiple"}
+                
                 onChange={(value) =>
                   setValue(
                     "services",

@@ -39,7 +39,7 @@ export const serverEnv = {
  * To expose them to the client, prefix them with `NEXT_PUBLIC_`.
  */
 export const clientSchema = z.object({
-  
+  NEXT_PUBLIC_CLOUDY_API_KEY_CLIENT: z.string(),
   NEXT_PUBLIC_CLOUDY_NAME_CLIENT: z.string(),
 });
 
@@ -51,4 +51,5 @@ export const clientSchema = z.object({
  */
 export const clientEnv = {
   NEXT_PUBLIC_CLOUDY_NAME_CLIENT: process.env.NEXT_PUBLIC_CLOUDY_NAME_CLIENT,
+  NEXT_PUBLIC_CLOUDY_API_KEY_CLIENT:process.env.NEXT_PUBLIC_CLOUDY_API_KEY_CLIENT
 };
