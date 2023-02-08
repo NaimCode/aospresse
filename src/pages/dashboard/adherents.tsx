@@ -97,9 +97,9 @@ const Services = () => {
 
       dataIndex: "photoId",
       key: "photoId",
-      render: (v) => (
+      render: (v,a) => (
         <AdvancedImage
-          cldImg={cloudy.image(v).resize(thumbnail().width(50))}
+          cldImg={cloudy.image(v?v:a.sexe=="F"?"placeholder_female":"placeholder_male").resize(thumbnail().width(50))}
           plugins={[lazyload(), responsive(), accessibility(), placeholder()]}
         />
       ),
@@ -162,6 +162,9 @@ const Services = () => {
         <ActionTable
           onEdit={() => {
             setupdateMembre(d);
+          }}
+          onCard={() => {
+            // setupdateMembre(d);
           }}
           onDelete={() => {
             deleteMember({ id: d.id });
@@ -287,6 +290,8 @@ const Services = () => {
     }
   };
   return (
+    <>
+    <CardAdherent/>
     <DashboardLayout>
       <div className="flex w-full flex-col items-center justify-center">
         <h1 className="text-3xl font-bold text-gray-700">
@@ -362,14 +367,28 @@ const Services = () => {
         </div>
       </div>
     </DashboardLayout>
+    </>
   );
 };
 
 export default Services;
 
+
+
+
+const CardAdherent = () => {
+  return <div className="fixed top-0 left-0 w-screen h-screen bg-black/70 z-[10000]">
+
+  </div>
+}
+
+
+
+
+
 type TMember = {
   name: string;
-  email: string;
+  email?: string;
   sexe: "M" | "F";
   dateNaissance?: string;
   lieuNaissance?: string;
@@ -379,7 +398,7 @@ type TMember = {
   tel?: string;
   profession?: string;
   lieuTravail?: string;
-  cin: string;
+  cin?: string;
   identifiant?: string;
   anneeTravail?: string;
   isPaid: boolean;
@@ -478,10 +497,7 @@ const AddMemberDialog = ({
     }
     if (
       !data.name ||
-      !data.email ||
-      !data.sexe ||
-      !data.familyStatus ||
-      !data.cin
+      !data.sexe 
     ) {
       toast.error("يجب ملئ جميع الحقول");
       return;
@@ -494,7 +510,7 @@ const AddMemberDialog = ({
       update({
         id: membre.id,
         name: data.name,
-        email: data.email,
+        email: data.email||"",
         sexe: data.sexe,
         dateNaissance: data.dateNaissance,
         lieuNaissance: data.lieuNaissance,
@@ -503,7 +519,7 @@ const AddMemberDialog = ({
         tel: data.tel,
         profession: data.profession,
         lieuTravail: data.lieuTravail,
-        cin: data.cin,
+        cin: data.cin||"",
         identifiant: data.identifiant,
         anneeTravail: data.anneeTravail,
         isPaid: data.isPaid,
@@ -515,7 +531,7 @@ const AddMemberDialog = ({
     else
       add({
         name: data.name,
-        email: data.email,
+        email: data.email||"",
         sexe: data.sexe,
         dateNaissance: data.dateNaissance,
         lieuNaissance: data.lieuNaissance,
@@ -524,7 +540,7 @@ const AddMemberDialog = ({
         tel: data.tel,
         profession: data.profession,
         lieuTravail: data.lieuTravail,
-        cin: data.cin,
+        cin: data.cin||"",
         identifiant: data.identifiant,
         anneeTravail: data.anneeTravail,
         isPaid: data.isPaid,

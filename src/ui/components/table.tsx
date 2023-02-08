@@ -8,7 +8,7 @@ import { type ColumnsType } from "antd/lib/table";
 import React from "react";
 import { FiMoreVertical } from "react-icons/fi";
 import { GrView } from "react-icons/gr";
-import { DeleteOutlined,EyeOutlined,EditOutlined } from "@ant-design/icons";
+import { DeleteOutlined,EyeOutlined,EditOutlined,IdcardOutlined } from "@ant-design/icons";
 import { MdMore } from "react-icons/md";
 import { useEffect } from 'react';
 
@@ -51,8 +51,10 @@ type TAction = {
   onView?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
+  onCard?:()=>void
 };
-export const ActionTable = ({ onView, onEdit, onDelete }: TAction) => {
+
+export const ActionTable = ({ onView, onEdit, onDelete,onCard }: TAction) => {
   const items: MenuProps["items"] = [
     ...(onView
         ? [
@@ -66,6 +68,18 @@ export const ActionTable = ({ onView, onEdit, onDelete }: TAction) => {
             },
           ]
         : []),
+        ...(onCard
+          ? [
+              {
+                onClick: onCard,
+  
+    
+                icon: <IdcardOutlined />,
+                label:"بطاقة تعريف",
+                key: "4",
+              },
+            ]
+          : []),
         ...(onEdit
             ? [
                 {
