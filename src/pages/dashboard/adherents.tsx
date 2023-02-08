@@ -178,8 +178,9 @@ const Services = () => {
         return;
       }
       const newData = (data || []).filter((d) => {
-        return true;
-      });
+        return d.name.includes(v)||(d.email||"").includes(v)
+
+      })
       setDataFilter(newData || []);
     }
   };
@@ -250,7 +251,7 @@ const Services = () => {
             lines.map((l: any,i:number) => {
           
               const obj={
-                name: l["النسب↵"]+" "+l["الاسم↵"],
+                name: l["النسب\n"]+" "+l["الاسم\n"],
                 sexe: l["الجنس"]&& l["الجنس"] === "انثى" ? "F" : "M",
                 familyStatus:familyStatus(l["الوضعية الاجتماعية"]),
                 email: l["بريد الالكتروني"],
@@ -263,7 +264,7 @@ const Services = () => {
                 dateNouvelAbonnement:l["تاريخ انتهاء الصلاحية"],
                 dateDebutAbonnement:l["تاريخ اعادة التسجيل"],
                 isPaid:l["مدفوع"] && l["مدفوع"]==="نعم"?true:false,
-                phone: l["هاتف"],
+                tel: l["هاتف"],
                 address:l["عنوان"],
                  num: stringToInt(l["رقم التسجيل"])
                 //مكان الازدياد
@@ -272,7 +273,7 @@ const Services = () => {
               
               };
               if(i==0){
-                console.log(data[0],obj)
+                console.log(Object.keys(data[0]))
               }
               return obj
             })
@@ -296,6 +297,7 @@ const Services = () => {
             <Button
               className={"flex flex-row items-center gap-2"}
               onClick={onPickfile}
+              loading={uploadingAdherent}
               size={"large"}
             >
               <UploadOutlined />
@@ -326,7 +328,25 @@ const Services = () => {
             <ExportButton
               tableName={"انشطة وخدمات الجمعية"}
               data={dataFilter.map((d) => {
-                return {};
+                return {
+                  "الاسم":d.name,
+                  "الجنس":d.sexe=="M"?"ذكر":"انثى",
+                  "الوضعية الاجتماعية":d.familyStatus=="C"?"أعزب":d.familyStatus=="M"?"متزوج":"مطلق",
+                  "البريد الالكتروني":d.email,
+                  "عدد الاطفال":d.childrenNumber,
+                  "رقم بطاقة الصحافة":d.identifiant,
+                  "عدد سنوات العمل":d.anneeTravail,
+                  "نوع":d.sifa=="A"?"عام":"مهني",
+                  "المؤسسة":d.lieuTravail,
+                  "تاريخ التسجيل":d.createdAt,
+                  "تاريخ انتهاء الصلاحية":d.dateNouvelAbonnement,
+                  "تاريخ اعادة التسجيل":d.dateDebutAbonnement,
+                  "مدفوع":d.isPaid?"نعم":"لا",
+                  "هاتف":d.tel,
+                  "عنوان":d.address,
+                  "رقم التسجيل":d.num
+
+                };
               })}
             />
           </div>
