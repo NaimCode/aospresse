@@ -25,6 +25,7 @@ import cx from "classnames";
 import Search from "antd/lib/input/Search";
 
 import ExportButton from "@ui/exportButton";
+import { DATE_FORMAT } from "@config/index";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const session = await getServerAuthSession(ctx);
@@ -94,13 +95,13 @@ const Category = () => {
             title: "تاريخ الإنشاء",
             dataIndex: "createdAt",
             key: "createdAt",
-            render: (v) => <span className={"opacity-60 text-[12px]"}>{moment(v).format("DD-MM-YYYY")}</span>,
+            render: (v) => <span className={"opacity-60 text-[12px]"}>{moment(v).format(DATE_FORMAT)}</span>,
         },
         {
             title: "تاريخ التعديل",
             dataIndex: "updatedAt",
             key: "updatedAt",
-            render: (v) => <span className={"opacity-60 text-[12px]"}>{moment(v).format("DD-MM-YYYY")}</span>,
+            render: (v) => <span className={"opacity-60 text-[12px]"}>{moment(v).format(DATE_FORMAT)}</span>,
         },
         {
             title: "",
@@ -163,8 +164,8 @@ const Category = () => {
                             return {
                                 "العنوان":d.name,
                                 "الوصف":d.description,
-                                "تاريخ الإنشاء":moment(d.createdAt).format("DD-MM-YYYY"),
-                                "تاريخ التعديل":moment(d.updatedAt).format("DD-MM-YYYY"),
+                                "تاريخ الإنشاء":moment(d.createdAt).format(DATE_FORMAT),
+                                "تاريخ التعديل":moment(d.updatedAt).format(DATE_FORMAT),
                             }
                         })} tableName={"إدارة الفئة"}/>
 

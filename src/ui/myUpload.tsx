@@ -46,7 +46,6 @@ const MyUpload = ({onSuccess,isUploading,setUploading}:{onSuccess:(key:string)=>
       }
       if (info.file.status === 'done') {
         // Get this url from response in real world.
-        console.log("file",info.file.response)
         onSuccess(info.file.response.public_id)
         getBase64(info.file.originFileObj as RcFile, (url) => {
           

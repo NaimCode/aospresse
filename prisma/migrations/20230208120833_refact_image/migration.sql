@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Adherent" ALTER COLUMN "children" SET DATA TYPE TEXT,
+ALTER COLUMN "photoId" DROP NOT NULL;

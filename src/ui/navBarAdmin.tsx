@@ -39,7 +39,7 @@ const menuItems: TMenu[] = [
 
 function NavBarAdmin() {
     const {data: session} = useSession()
-    console.log(session)
+    
     const router = useRouter()
     const items: MenuProps['items'] = [
         {

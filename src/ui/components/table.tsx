@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import type {Adherent, Category, Service, User} from "@prisma/client";
@@ -9,6 +10,7 @@ import { FiMoreVertical } from "react-icons/fi";
 import { GrView } from "react-icons/gr";
 import { DeleteOutlined,EyeOutlined,EditOutlined } from "@ant-design/icons";
 import { MdMore } from "react-icons/md";
+import { useEffect } from 'react';
 
 interface Props<T> {
   columns: ColumnsType<T>;
@@ -19,7 +21,7 @@ interface Props<T> {
   options?: Object;
 }
 
-export type TableType = User | Category | Service |Adherent;
+export type TableType = User | Category | Service |Adherent |any;
 const MyTable: React.FC<Props<TableType>> = ({
   columns,
   data,
@@ -27,6 +29,7 @@ const MyTable: React.FC<Props<TableType>> = ({
   options,
   rowSelection,
 }) => {
+  
   return (
     <Table
       // size="small"

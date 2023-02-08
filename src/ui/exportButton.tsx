@@ -1,13 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import {Button} from "antd";
 import {FileExcelOutlined} from "@ant-design/icons";
-import tableExport from "antd-table-export";
 import * as XLSX from 'xlsx';
 
-const exportExcel= (data: any,columns:any,tableName:string) => {
-    const exportInstance = new tableExport(data, columns);
-    exportInstance.download(tableName, "xlsx");
-}
+
 function ExportButton({data,tableName}:{data:any,tableName:string}) {
     const downloadExcel = () => {
         const worksheet = XLSX.utils.json_to_sheet(data);

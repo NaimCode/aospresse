@@ -21,6 +21,7 @@ import { useForm, Controller, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import ExportButton from "@ui/exportButton";
 import TextArea from "antd/lib/input/TextArea";
+import { DATE_FORMAT } from "@config/index";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession(ctx);
@@ -92,7 +93,7 @@ const Services = () => {
       key: "createdAt",
       render: (v) => (
         <span className={"text-[12px] opacity-60"}>
-          {moment(v).format("DD-MM-YYYY")}
+          {moment(v).format(DATE_FORMAT)}
         </span>
       ),
     },
@@ -102,7 +103,7 @@ const Services = () => {
       key: "updatedAt",
       render: (v) => (
         <span className={"text-[12px] opacity-60"}>
-          {moment(v).format("DD-MM-YYYY")}
+          {moment(v).format(DATE_FORMAT)}
         </span>
       ),
     },
@@ -169,8 +170,8 @@ const Services = () => {
                   الوصف: d.description,
                   للاطفال: d.forChild ? "نعم" : "لا",
                   "": "",
-                  "تاريخ الإنشاء": moment(d.createdAt).format("DD-MM-YYYY"),
-                  "تاريخ التعديل": moment(d.updatedAt).format("DD-MM-YYYY"),
+                  "تاريخ الإنشاء": moment(d.createdAt).format(DATE_FORMAT),
+                  "تاريخ التعديل": moment(d.updatedAt).format(DATE_FORMAT),
                 };
               })}
             />

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -5,13 +6,16 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import DashboardLayout from "@ui/dashboardLayout";
 import { api } from "@utils/api";
 import type { Adherent, Service, User } from "@prisma/client";
 import { type ColumnsType } from "antd/lib/table";
 import MyTable, { ActionTable } from "@ui/components/table";
 import moment from "moment";
+
+import * as XLSX from "xlsx";
+import { fill, scale, thumbnail } from "@cloudinary/url-gen/actions/resize";
 import {
   Button,
   DatePicker,
@@ -24,15 +28,28 @@ import {
   Slider,
   Tag,
 } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import type { GetServerSideProps } from "next";
+import { AdvancedImage } from "@cloudinary/react";
 import { getServerAuthSession } from "@server/auth";
 import Search from "antd/lib/input/Search";
 import { useForm, Controller, type SubmitHandler } from "react-hook-form";
-
+import {
+  BsGenderMale as IoMaleSharp,
+  BsGenderFemale as IoFemale,
+} from "react-icons/bs";
 import toast from "react-hot-toast";
 import ExportButton from "@ui/exportButton";
 import MyUpload from "@ui/myUpload";
+import cloudy from "@utils/cloudinary";
+import {
+  lazyload,
+  responsive,
+  accessibility,
+  placeholder,
+} from "@cloudinary/react";
+import { DATE_FORMAT } from "@config/index";
+
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession(ctx);
 
@@ -76,20 +93,82 @@ const Services = () => {
 
   const columns: ColumnsType<Adherent> = [
     {
+      title: "الإسم الكامل",
+
+      dataIndex: "photoId",
+      key: "photoId",
+      render: (v) => (
+        <AdvancedImage
+          cldImg={cloudy.image(v).resize(thumbnail().width(50))}
+          plugins={[lazyload(), responsive(), accessibility(), placeholder()]}
+        />
+      ),
+    },
+    {
+      title: "الإسم الكامل",
+      dataIndex: "name",
+      key: "name",
+      render: (v) => <span className={"text-md font-bold"}>{v}</span>,
+    },
+    {
+      title: "الجنس",
+      width: 50,
+      align: "center",
+      dataIndex: "sexe",
+      key: "sexe",
+      render: (v) =>
+        v === "M" ? (
+          <span className={"text-md font-bold"}>
+            <IoMaleSharp />
+          </span>
+        ) : (
+          <span className={"text-md font-bold"}>
+            <IoFemale />
+          </span>
+        ),
+    },
+    {
+      title: "البريد الالكتروني",
+
+      dataIndex: "email",
+      key: "email",
+      render: (v) => <span className={"font-ligh text-sm italic"}>{v}</span>,
+    },
+    {
+      title: "تاريخ الإنشاء",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (v) => (
+        <span className={"text-[12px] opacity-60"}>
+          {moment(v).format(DATE_FORMAT)}
+        </span>
+      ),
+    },
+    {
+      title: "تاريخ التعديل",
+      dataIndex: "updatedAt",
+      key: "updatedAt",
+      render: (v) => (
+        <span className={"text-[12px] opacity-60"}>
+          {moment(v).format(DATE_FORMAT)}
+        </span>
+      ),
+    },
+    {
       title: "",
       dataIndex: "action",
       key: "action",
       render: (_, d) => (
-          <ActionTable
-              onEdit={() => {
-                setupdateMembre(d);
-              }}
-              onDelete={() => {
-                deleteMember({id: d.id});
-              }}
-          />
+        <ActionTable
+          onEdit={() => {
+            setupdateMembre(d);
+          }}
+          onDelete={() => {
+            deleteMember({ id: d.id });
+          }}
+        />
       ),
-  },
+    },
   ];
 
   const filter = (v: string) => {
@@ -104,6 +183,108 @@ const Services = () => {
       setDataFilter(newData || []);
     }
   };
+
+  const fileRef = useRef<HTMLInputElement>(null);
+  const onPickfile = () => fileRef.current?.click();
+  const { mutate: importAdherent, isLoading: uploadingAdherent } =
+    api.adherent.import.useMutation({
+      onSuccess: () => {
+        toast.dismiss();
+        toast.success("تم إضافة العضو بنجاح");
+        void refetch();
+      },
+      onError: () => {
+        toast.dismiss();
+        toast.error("حدث خطأ ما");
+      },
+      onMutate: () => {
+        toast.loading("جاري إضافة العضو");
+      },
+    });
+
+
+
+  const onImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.currentTarget.files;
+    if (files && files[0]) {
+      const file = files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // evt = on_file_select event
+        /* Parse data */
+        const bstr = e.target?.result;
+        const wb = XLSX.read(bstr, { type: "binary" });
+        /* Get first worksheet */
+        const wsname = wb.SheetNames[0];
+        if (wsname) {
+          const ws = wb.Sheets[wsname];
+          /* Convert array of arrays */
+          const data: any = XLSX.utils.sheet_to_json(ws!, {
+            raw: false,
+          });
+          /* Update state */
+          toast.dismiss();
+          const lines = data;
+          function familyStatus(v:string|undefined):"C"|"M"|"D"|undefined{
+            if(v===undefined)  return undefined
+              if(v.includes("أعزب")) return "C"
+               if(v.includes("متزوج")) return "M"
+                 if(v.includes("مطلق")) return "D"
+  
+                 return undefined
+             }
+  
+             function sifa(v:string|undefined):"A"|"P"|undefined{
+              if(v===undefined)  return undefined
+              if(v.includes("مهني")) return "P"
+              else return "A"
+  
+             }
+
+             function stringToInt(v:string|undefined|number):number|undefined{
+              if(v===undefined)  return undefined
+              if(typeof v === "number") return v
+              return parseInt(v)
+             }
+          importAdherent(
+            lines.map((l: any,i:number) => {
+          
+              const obj={
+                name: l["النسب↵"]+" "+l["الاسم↵"],
+                sexe: l["الجنس"]&& l["الجنس"] === "انثى" ? "F" : "M",
+                familyStatus:familyStatus(l["الوضعية الاجتماعية"]),
+                email: l["بريد الالكتروني"],
+                childrenNumber:stringToInt(l["عدد الاطفال"]),
+                identifiant:l["رقم بطاقة الصحافة"],
+                anneeTravail:l['عدد سنوات العمل'],
+                sifa:sifa(l["نوع"]),
+                lieuTravail:l["المؤسسة"],
+                createdAt:l["تاريخ التسجيل"]&& moment(l["تاريخ التسجيل"]).toDate().toISOString(),
+                dateNouvelAbonnement:l["تاريخ انتهاء الصلاحية"],
+                dateDebutAbonnement:l["تاريخ اعادة التسجيل"],
+                isPaid:l["مدفوع"] && l["مدفوع"]==="نعم"?true:false,
+                phone: l["هاتف"],
+                address:l["عنوان"],
+                 num: stringToInt(l["رقم التسجيل"])
+                //مكان الازدياد
+                //تاريخ الازدياد
+                //رقم بطاقة النقابة
+              
+              };
+              if(i==0){
+                console.log(data[0],obj)
+              }
+              return obj
+            })
+          );
+          console.log("data", data);
+         
+          //
+        }
+      };
+      reader.readAsBinaryString(file);
+    }
+  };
   return (
     <DashboardLayout>
       <div className="flex w-full flex-col items-center justify-center">
@@ -112,6 +293,21 @@ const Services = () => {
         </h1>
         <div className={""}>
           <div className={"flex flex-row-reverse items-center gap-6 py-6 "}>
+            <Button
+              className={"flex flex-row items-center gap-2"}
+              onClick={onPickfile}
+              size={"large"}
+            >
+              <UploadOutlined />
+
+              <input
+                onChange={onImport}
+                hidden
+                ref={fileRef}
+                type="file"
+                accept=".xlsx, .xls"
+              />
+            </Button>
             <AddMemberDialog
               onAdd={() => refetch()}
               membre={updateMembre}
@@ -159,7 +355,7 @@ type TMember = {
   lieuNaissance?: string;
   familyStatus: "C" | "M" | "D";
   sifa: "A" | "P";
-  children?: number;
+  childrenNumber?: number;
   tel?: string;
   profession?: string;
   lieuTravail?: string;
@@ -168,8 +364,8 @@ type TMember = {
   anneeTravail?: string;
   isPaid: boolean;
   dateDebutAbonnement: string;
-  services: Service[];
-  photoId: string;
+  servicesId: string[];
+  photoId?: string;
 };
 const AddMemberDialog = ({
   onAdd,
@@ -197,25 +393,25 @@ const AddMemberDialog = ({
     if (membre) {
       setIsModalOpen(true);
       setValue("name", membre.name);
-      setValue("email", membre.email);
+      setValue("email", membre.email||"");
       setValue("tel", membre.tel || undefined);
-      setValue("sexe", membre.sexe);
+      setValue("sexe", membre.sexe || "M");
       setValue("dateNaissance", membre.dateNaissance || undefined);
       setValue("lieuNaissance", membre.lieuNaissance || undefined);
-      setValue("familyStatus", membre.familyStatus);
-      setValue("children", membre.children || undefined);
+      setValue("familyStatus", membre.familyStatus || "C");
+      setValue("childrenNumber", membre.childrenNumber || undefined);
       setValue("profession", membre.profession || undefined);
       setValue("lieuTravail", membre.lieuTravail || undefined);
-      setValue("cin", membre.cin);
+      setValue("cin", membre.cin || "");
       setValue("identifiant", membre.identifiant || undefined);
       setValue("anneeTravail", membre.anneeTravail || undefined);
       setValue("isPaid", membre.isPaid);
-      setValue("photoId", membre.photoId)
+      setValue("photoId", membre.photoId || undefined);
       //FixMe: fix date
       setValue("dateDebutAbonnement", membre.dateDebutAbonnement || "");
-      setValue("sifa", membre.sifa);
+      setValue("sifa", membre.sifa || "P");
 
-      setValue("services", (membre as any).services);
+      setValue("servicesId", (membre as any).services);
     }
   }, [membre, setValue]);
 
@@ -270,9 +466,7 @@ const AddMemberDialog = ({
       toast.error("يجب ملئ جميع الحقول");
       return;
     }
-    if (
-      !data.photoId
-    ) {
+    if (!data.photoId) {
       toast.error("يجب اضافة صورة");
       return;
     }
@@ -285,7 +479,7 @@ const AddMemberDialog = ({
         dateNaissance: data.dateNaissance,
         lieuNaissance: data.lieuNaissance,
         familyStatus: data.familyStatus,
-        children: data.children,
+        childrenNumber: data.childrenNumber,
         tel: data.tel,
         profession: data.profession,
         lieuTravail: data.lieuTravail,
@@ -296,7 +490,7 @@ const AddMemberDialog = ({
         sifa: data.sifa,
         photoId: data.photoId,
         dateDebutAbonnement: data.dateDebutAbonnement,
-        services: data.services,
+        servicesId: data.servicesId,
       });
     else
       add({
@@ -306,7 +500,7 @@ const AddMemberDialog = ({
         dateNaissance: data.dateNaissance,
         lieuNaissance: data.lieuNaissance,
         familyStatus: data.familyStatus,
-        children: data.children,
+        childrenNumber: data.childrenNumber,
         tel: data.tel,
         profession: data.profession,
         lieuTravail: data.lieuTravail,
@@ -317,7 +511,7 @@ const AddMemberDialog = ({
         dateDebutAbonnement: data.dateDebutAbonnement,
         sifa: data.sifa,
         photoId: data.photoId,
-        services: data.services,
+        servicesId: data.servicesId,
       });
   };
 
@@ -346,9 +540,13 @@ const AddMemberDialog = ({
         <div className="flex flex-row gap-6">
           <div className="w-1/2 space-y-3 py-6">
             <Form.Item label="صورة" required labelCol={{ span: 7 }}>
-              <MyUpload onSuccess={(key:string)=>setValue("photoId",key)} isUploading={uploading} setUploading={(b:boolean)=>setUploading(b)}/>
+              <MyUpload
+                onSuccess={(key: string) => setValue("photoId", key)}
+                isUploading={uploading}
+                setUploading={(b: boolean) => setUploading(b)}
+              />
             </Form.Item>
-            <Form.Item label="الإسم واللقب" required labelCol={{ span: 7 }}>
+            <Form.Item label="الإسم الكامل " required labelCol={{ span: 7 }}>
               <Controller
                 name="name"
                 defaultValue=""
@@ -413,23 +611,26 @@ const AddMemberDialog = ({
               labelCol={{ span: 7 }}
             >
               <Controller
-                name="children"
+                name="childrenNumber"
                 control={control}
                 render={({ field }) => (
                   <Input
                     disabled={watch("familyStatus") == "C"}
                     type="number"
                     {...field}
+                    onChange={(e) =>
+                      setValue("childrenNumber", parseInt(e.target.value))
+                    }
                   />
                 )}
               />
             </Form.Item>
-            <Form.Item label="للاطفال" labelCol={{ span: 7 }}>
+            <Form.Item label="تاريخ الميلاد" labelCol={{ span: 7 }}>
               <DatePicker
                 className="w-full"
-                  // value={dayjs}// Dayjswatch("dateNaissance")}
+                // value={dayjs}// Dayjswatch("dateNaissance")}
                 onChange={(e) =>
-                  setValue("dateNaissance", e?.format("dd-mm-yyyy"))
+                  setValue("dateNaissance", e?.format(DATE_FORMAT))
                 }
               />
             </Form.Item>
@@ -444,14 +645,28 @@ const AddMemberDialog = ({
           </div>
 
           <Divider type="vertical" className="h-auto" />
+
           <div className="w-1/2 py-6">
+            <Form.Item label="رقم البطاقة الوطنية" required>
+              <Controller
+                name="cin"
+                defaultValue=""
+                control={control}
+                render={({ field }) => <Input {...field} />}
+              />
+            </Form.Item>
             <div className="flex flex-row gap-2">
-              <Form.Item label="رقم البطاقة الوطنية" required>
+              <Form.Item label="الصفة" labelCol={{ span: 0 }}>
                 <Controller
-                  name="cin"
-                  defaultValue=""
+                  name="sifa"
                   control={control}
-                  render={({ field }) => <Input {...field} />}
+                  defaultValue="P"
+                  render={({ field }) => (
+                    <Radio.Group {...field}>
+                      <Radio value={"A"}>منتسب</Radio>
+                      <Radio value={"P"}>مهني</Radio>
+                    </Radio.Group>
+                  )}
                 />
               </Form.Item>
               <Form.Item label="رقم بطاقة الصحافة / النقابة">
@@ -488,7 +703,7 @@ const AddMemberDialog = ({
             </div>
 
             <div className="flex flex-row gap-2">
-              <Form.Item label="سنة من الخبرة" className="w-1/2">
+              <Form.Item label="سنوات الخبرة" className="w-1/2">
                 <Controller
                   name="anneeTravail"
                   defaultValue=""
@@ -505,17 +720,13 @@ const AddMemberDialog = ({
                   className="w-full"
                   onChange={(e) => {
                     if (e) {
-                      setValue("dateDebutAbonnement", e.format("dd-mm-yyyy"));
+                      setValue("dateDebutAbonnement", e.format(DATE_FORMAT));
                     }
                   }}
                 />
               </Form.Item>
             </div>
-            <Form.Item
-              required
-              label="الوضعية الاجتماعية"
-              labelCol={{ span: 0 }}
-            >
+            <Form.Item required label="واجب الانخراط" labelCol={{ span: 0 }}>
               <Controller
                 name="isPaid"
                 control={control}
@@ -528,34 +739,13 @@ const AddMemberDialog = ({
                 )}
               />
             </Form.Item>
-            <Form.Item label="الصفة" labelCol={{ span: 7 }}>
-              <Controller
-                name="sifa"
-                control={control}
-                defaultValue="P"
-                render={({ field }) => (
-                  <Radio.Group {...field}>
-                    <Radio value={"A"}>منتسب</Radio>
-                    <Radio value={"P"}>مهني</Radio>
-                  </Radio.Group>
-                )}
-              />
-            </Form.Item>
 
-            <Form.Item label="نوع النشاط" required labelCol={{ span: 7 }}>
+            <Form.Item label="نوع النشاط" required labelCol={{ span: 5 }}>
               <Select
                 optionFilterProp="children"
                 maxTagCount={"responsive"}
                 mode={"multiple"}
-                onChange={(value) =>
-                  setValue(
-                    "services",
-                    value.map((v: string) => {
-                      return { id: v };
-                    })
-                  )
-                }
-                tagRender={(props) => <Tag color="blue" {...props} />}
+                onChange={(value) => setValue("servicesId", value)}
                 loading={gettingService}
                 options={services?.map((c) => ({
                   label: c.activite,

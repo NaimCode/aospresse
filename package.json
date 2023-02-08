@@ -10,6 +10,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@cloudinary/react": "^1.9.1",
     "@cloudinary/url-gen": "^1.9.0",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
@@ -27,6 +28,7 @@
     "bcrypt": "^5.1.0",
     "classnames": "^2.3.2",
     "cloudinary": "^1.33.0",
+    "cloudinary-react": "^1.8.1",
     "framer-motion": "^7.6.7",
     "lottie-react": "^2.3.1",
     "moment": "^2.29.4",

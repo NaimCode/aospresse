@@ -43,32 +43,35 @@ model Adherent {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
+  
+  num       Int @unique @default(autoincrement())
   //
-  name          String
-  sexe          Sexe
+  name          String 
+  sexe          Sexe?
 
   dateNaissance String?
   lieuNaissance String?
-  familyStatus FamilyStatus
-  children      Int?
-
+  familyStatus FamilyStatus?
+  childrenNumber      Int?
+   address String?
   tel String?
 
-  email        String
+  email        String?
   profession   String?
   lieuTravail  String?
-  cin          String
+  cin          String?
   identifiant  String?
   anneeTravail String?
-  sifa        Sifa
+  sifa        Sifa?
   isPaid Boolean @default(false)
 
   dateDebutAbonnement  String?
   dateNouvelAbonnement String?
 
-  photoId String
-  services Service[]
+  photoId String?
+  servicesId String[]
+
+  
 }
 
 model Service {
@@ -82,7 +85,6 @@ model Service {
  categoryId String
  category   Category @relation(fields: [categoryId], references: [id])
 
-  adherents Adherent[]
 }
 
 
