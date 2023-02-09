@@ -36,7 +36,7 @@ import {
   UploadOutlined,
   CheckCircleTwoTone,
   CloseCircleTwoTone,
-  DownloadOutlined
+  DownloadOutlined,
 } from "@ant-design/icons";
 import type { GetServerSideProps } from "next";
 import { AdvancedImage } from "@cloudinary/react";
@@ -319,11 +319,10 @@ const Services = () => {
   return (
     <>
       {card && <CardAdherent item={card} onClose={() => setcard(undefined)} />}
+      {card && <CardAdherentPrint item={card} onClose={() => setcard(undefined)} />}
       <DashboardLayout>
         <div className="flex w-full flex-col items-center justify-center">
-          <h1 className="text-3xl font-bold text-gray-700">
-    المنخرطين
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-700">المنخرطين</h1>
           <div className={""}>
             <div className={"flex flex-row-reverse items-center gap-6 py-6 "}>
               <Button
@@ -418,100 +417,231 @@ const CardAdherent = ({
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
   });
-  const onPrint=()=>{
-console.log("print")
-  }
+ 
   return (
     <>
-    <div    onClick={onClose} className="fixed bottom-[100px] left-0 z-[12000] flex h-screen w-screen flex-col items-center justify-end gap-6">
-    <Button  type="primary"
-    onClick={(e)=>{
-      e.stopPropagation()
-     handlePrint()
+      {/* <div
+        onClick={onClose}
+        className="fixed bottom-[100px] left-0 z-[12000] flex h-screen w-screen flex-col items-center justify-end gap-6"
+      >
+        <Button
+          type="primary"
+          onClick={(e) => {
+            e.stopPropagation();
+            handlePrint();
+          }}
+          icon={<DownloadOutlined />}
+          size={"large"}
+        >
+          طبع
+        </Button>
+      </div> */}
 
-    }}
-    icon={<DownloadOutlined />} size={"large"}>
-    طبع
-         </Button>
-    </div>
-    <ConfigProvider
-             direction='ltr'
-            >
-       
-    <div
-      onClick={onClose}
-      ref={componentRef}
-      className="fixed top-0 left-0 z-[10000] flex h-screen w-screen flex-col items-center justify-center gap-6 bg-black/70"
-    >
-      <div className="flex flex-row gap-10">
-     
-        <CardShape>
-          <div className="flex flex-row items-center justify-center">
-            <img src="/logo_2.png" style={{height:cardHeight}} className="object-contain" alt="logo_2"/>
-          </div>
-        </CardShape>
-        <CardShape>
-          <div className="flex flex-col items-stretch w-full h-full gap-1">
-       <div className="flex-grow flex flex-row items-stretch">
-   
-       <div className="flex flex-col flex-grow">
-  
-      <img src="/logo_large.png" style={{}} className="object-contain w-[220px]" alt="logo_2"/>
-      <div className="flex-grow flex flex-col items-start justify-center gap-1 text-sm">
-      <span>
-          {`رقم العضوية : ${item.identifiant||""}`}
-        </span>
-        <span>
-          {`الاسم الكامل : ${item.name||""}`}
-        </span> <span>
-          {`المؤسسة: ${item.lieuTravail||""}`}
-        </span> <span>
-          {`صالحة الى غاية : ${item.dateNouvelAbonnement||""}`}
-        </span> 
+      <div
+        onClick={onClose}
+        ref={componentRef}
+        className="fixed top-0 left-0 z-[10001] flex h-screen w-screen flex-col items-center justify-center gap-6 bg-black/70"
+      >
+        <div className="flex flex-row gap-10">
+          <CardShape>
+            <div className="flex flex-row items-center justify-center">
+              <img
+                src="/logo_2.png"
+                style={{ height: cardHeight }}
+                className="object-contain"
+                alt="logo_2"
+              />
+            </div>
+          </CardShape>
+          <CardShape>
+            <div className="flex h-full w-full flex-col items-stretch gap-1">
+              <div className="flex flex-grow flex-row items-stretch gap-3">
+                <div className="flex flex-grow flex-col">
+                  <img
+                    src="/logo_large.png"
+                    style={{}}
+                    className="w-[220px] object-contain"
+                    alt="logo_2"
+                  />
+                  <div className="flex flex-grow flex-col items-start justify-center gap-1 text-sm">
+                    <span>{`رقم العضوية : ${item.identifiant || ""}`}</span>
+                    <span>{`الاسم الكامل : ${item.name || ""}`}</span>{" "}
+                    <span>{`المؤسسة: ${item.lieuTravail || ""}`}</span>{" "}
+                    <span>
+                      {`صالحة الى غاية : ${item.dateNouvelAbonnement || ""}`}
+                    </span>
+                  </div>
+                </div>
 
-      </div>
-       </div>
-
-       <div className="w-[100px] flex flex-col">
-       <AdvancedImage
-          cldImg={cloudy
-            .image(
-              item.photoId ?  item.photoId : item.sexe == "F" ? "placeholder_female" : "placeholder_male"
-            )
-            .resize(thumbnail().width(90))}
-          plugins={[lazyload(), responsive(), accessibility(), placeholder()]}
-        />
-<span className="text-center text-blue-400">
-  {item.sifa==="A"?"منتسب":"مهني"}
-</span>
-        <span className="text-[10px] text-center leading-1 tracking-tighter">
-        امضاء رئيسة الجمعية
-        <br/>
-         حنان رحاب
-        </span>
-        <img src="/signature.png" style={{}} className="object-contain h-[30px]" alt="logo_2"/>
+                <div className="flex w-[100px] flex-col">
+                  <AdvancedImage
+                    cldImg={cloudy
+                      .image(
+                        item.photoId
+                          ? item.photoId
+                          : item.sexe == "F"
+                          ? "placeholder_female"
+                          : "placeholder_male"
+                      )
+                      .resize(thumbnail().width(90))}
+                    plugins={[
+                      lazyload(),
+                      responsive(),
+                      accessibility(),
+                      placeholder(),
+                    ]}
+                  />
+                  <span className="text-center text-blue-400">
+                    {item.sifa === "A" ? "منتسب" : "مهني"}
+                  </span>
+                  <span className="leading-1 text-center text-[10px] tracking-tighter">
+                    امضاء رئيسة الجمعية
+                    <br />
+                    حنان رحاب
+                  </span>
+                  <img
+                    src="/signature.png"
+                    style={{}}
+                    className="h-[30px] object-contain"
+                    alt="logo_2"
+                  />
+                </div>
+              </div>
+              <div className="h-[1px] bg-blue-700"></div>
+              <div className="text-center text-[11px]">
+                النقابة الوطنية للصحافة المغربية 25 شارع مولاي عبد الله الرباط
+                هاتف : 0537709331
+              </div>
+            </div>
+          </CardShape>
         </div>
-     </div>
-     <div className="bg-blue-700 h-[1px]">
-     </div>
-     <div className="text-[11px] text-center">
-
-النقابة الوطنية للصحافة المغربية 25 شارع مولاي عبد الله الرباط 
-هاتف : 0537709331
-     </div>
-          </div>
-        </CardShape>
       </div>
-    </div>
-    </ConfigProvider>
     </>
   );
 };
 
+
+const CardAdherentPrint = ({
+  item,
+  onClose,
+}: {
+  item: Adherent;
+  onClose: () => void;
+}) => {
+  const componentRef = useRef<HTMLDivElement>(null);
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
+  const onPrint = () => {
+    console.log("print");
+  };
+  return (
+    <>
+      <div
+        onClick={onClose}
+        className="fixed bottom-[100px] left-0 z-[12000] flex h-screen w-screen flex-col items-center justify-end gap-6"
+      >
+        <Button
+          type="primary"
+          onClick={(e) => {
+            e.stopPropagation();
+            handlePrint();
+          }}
+          icon={<DownloadOutlined />}
+          size={"large"}
+        >
+          طبع
+        </Button>
+      </div>
+
+      <div
+        onClick={onClose}
+        ref={componentRef}
+        className="fixed top-0 left-0 z-[10000] flex h-screen w-screen flex-col items-center justify-center gap-6 bg-black/30"
+      >
+        <div className="flex flex-row gap-10">
+     
+          <CardShape>
+            <div className="flex h-full w-full flex-col items-stretch gap-1">
+              <div className="flex flex-grow flex-row items-stretch gap-3">
+              <div className="flex w-[100px] flex-col">
+                  <AdvancedImage
+                    cldImg={cloudy
+                      .image(
+                        item.photoId
+                          ? item.photoId
+                          : item.sexe == "F"
+                          ? "placeholder_female"
+                          : "placeholder_male"
+                      )
+                      .resize(thumbnail().width(90))}
+                    plugins={[
+                      lazyload(),
+                      responsive(),
+                      accessibility(),
+                      placeholder(),
+                    ]}
+                  />
+                  <span className="text-center text-blue-400">
+                    {item.sifa === "A" ? "منتسب" : "مهني"}
+                  </span>
+                  <span className="leading-1 text-center text-[10px] tracking-tighter">
+                    امضاء رئيسة الجمعية
+                    <br />
+                    حنان رحاب
+                  </span>
+                  <img
+                    src="/signature.png"
+                    style={{}}
+                    className="h-[30px] object-contain"
+                    alt="logo_2"
+                  />
+                </div>
+                <div className="flex flex-grow flex-col">
+                  <img
+                    src="/logo_large.png"
+                    style={{}}
+                    className="w-[220px] object-contain"
+                    alt="logo_2"
+                  />
+                  <div className="flex flex-grow flex-col items-end justify-center gap-1 text-sm ">
+                    <span>{ `${item.identifiant || ""} : رقم العضوية`}</span>
+                    <span>{ `${item.name || ""} : الاسم الكامل`}</span>{" "}
+                    <span>{`${item.lieuTravail || ""} : المؤسسة`}</span>{" "}
+                    <span>
+                      {`${item.dateNouvelAbonnement || ""} : صالحة الى غاية`}
+                    </span>
+                  </div>
+                </div>
+
+               
+              </div>
+              <div className="h-[1px] bg-blue-700"></div>
+              <div className="text-center text-[11px]">
+                النقابة الوطنية للصحافة المغربية 25 شارع مولاي عبد الله الرباط
+                هاتف : 0537709331
+              </div>
+            </div>
+          </CardShape>
+          <CardShape>
+            <div className="flex flex-row items-center justify-center">
+              <img
+                src="/logo_2.png"
+                style={{ height: cardHeight }}
+                className="object-contain"
+                alt="logo_2"
+              />
+            </div>
+          </CardShape>
+        </div>
+      </div>
+    </>
+  );
+};
 const CardShape = ({ children }: { children: any }) => {
   return (
     <div
-    onClick={(e)=>e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
       style={{ width: cardWidth, height: cardHeight, borderRadius: cardRadius }}
       className="bg-white  p-6"
     >
