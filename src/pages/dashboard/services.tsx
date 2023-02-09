@@ -12,7 +12,7 @@ import { type ColumnsType } from "antd/lib/table";
 import MyTable, { ActionTable } from "@ui/components/table";
 import moment from "moment";
 import { Button, Divider, Form, Input, Modal, Radio, Select, Tag } from "antd";
-import { PlusOutlined, CheckCircleTwoTone } from "@ant-design/icons";
+import { PlusOutlined, CheckCircleTwoTone,CloseCircleTwoTone } from "@ant-design/icons";
 import type { GetServerSideProps } from "next";
 import { getServerAuthSession } from "@server/auth";
 import Search from "antd/lib/input/Search";
@@ -85,7 +85,7 @@ const Services = () => {
       dataIndex: "forChild",
       key: "forChild",
       align:"center",
-      render: (v) => <CheckCircleTwoTone className={v?"":"hidden"} />,
+      render: (v) => (v ? <CheckCircleTwoTone /> : <CloseCircleTwoTone />),
     },
     {
       title: "تاريخ الإنشاء",

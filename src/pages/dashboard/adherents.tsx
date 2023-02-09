@@ -57,6 +57,7 @@ import {
   placeholder,
 } from "@cloudinary/react";
 import { DATE_FORMAT } from "@config/index";
+import { useReactToPrint } from "react-to-print";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession(ctx);
@@ -320,7 +321,7 @@ const Services = () => {
       <DashboardLayout>
         <div className="flex w-full flex-col items-center justify-center">
           <h1 className="text-3xl font-bold text-gray-700">
-            انشطة وخدمات الجمعية
+    المنخرطين
           </h1>
           <div className={""}>
             <div className={"flex flex-row-reverse items-center gap-6 py-6 "}>
@@ -356,7 +357,7 @@ const Services = () => {
               <div className={"flex-grow"}></div>
 
               <ExportButton
-                tableName={"انشطة وخدمات الجمعية"}
+                tableName={"المنخرطين"}
                 data={dataFilter.map((d) => {
                   return {
                     الاسم: d.name,
@@ -412,7 +413,10 @@ const CardAdherent = ({
   item: Adherent;
   onClose: () => void;
 }) => {
-
+  const componentRef = useRef<HTMLDivElement>(null);
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
   const onPrint=()=>{
 console.log("print")
   }
@@ -422,7 +426,7 @@ console.log("print")
     <Button  type="primary"
     onClick={(e)=>{
       e.stopPropagation()
-      //sdsjdjsd
+     handlePrint()
 
     }}
     icon={<DownloadOutlined />} size={"large"}>
@@ -431,6 +435,7 @@ console.log("print")
     </div>
     <div
       onClick={onClose}
+      ref={componentRef}
       className="fixed top-0 left-0 z-[10000] flex h-screen w-screen flex-col items-center justify-center gap-6 bg-black/70"
     >
       <div className="flex flex-row gap-10">

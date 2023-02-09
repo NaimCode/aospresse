@@ -16,12 +16,12 @@ type TMenu = {
 }
 const menuItems: TMenu[] = [
     {
-        title: "المنخرطين",
+        title: "أعضاء",
         icon: <TeamOutlined />,
         route: "/dashboard/members"
     },
     {
-        title: "أعضاء",
+        title:"المنخرطين",
         icon: <TeamOutlined />,
         route: "/dashboard/adherents"
     },
