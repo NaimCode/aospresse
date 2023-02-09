@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
@@ -14,6 +15,7 @@ import { type ColumnsType } from "antd/lib/table";
 import MyTable, { ActionTable } from "@ui/components/table";
 import moment from "moment";
 
+import idCard from "../../ui/idCard";
 import * as XLSX from "xlsx";
 import { fill, scale, thumbnail } from "@cloudinary/url-gen/actions/resize";
 import {
@@ -28,7 +30,13 @@ import {
   Slider,
   Tag,
 } from "antd";
-import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  UploadOutlined,
+  CheckCircleTwoTone,
+  CloseCircleTwoTone,
+  DownloadOutlined
+} from "@ant-design/icons";
 import type { GetServerSideProps } from "next";
 import { AdvancedImage } from "@cloudinary/react";
 import { getServerAuthSession } from "@server/auth";
@@ -70,6 +78,7 @@ const Services = () => {
   const [updateMembre, setupdateMembre] = useState<Adherent | undefined>(
     undefined
   );
+  const [card, setcard] = useState<Adherent | undefined>(undefined);
   const [dataFilter, setDataFilter] = useState<Adherent[]>([]);
   const { data, isLoading, refetch } = api.adherent.getAll.useQuery(undefined, {
     onSuccess(data) {
@@ -97,9 +106,13 @@ const Services = () => {
 
       dataIndex: "photoId",
       key: "photoId",
-      render: (v,a) => (
+      render: (v, a) => (
         <AdvancedImage
-          cldImg={cloudy.image(v?v:a.sexe=="F"?"placeholder_female":"placeholder_male").resize(thumbnail().width(50))}
+          cldImg={cloudy
+            .image(
+              v ? v : a.sexe == "F" ? "placeholder_female" : "placeholder_male"
+            )
+            .resize(thumbnail().width(50))}
           plugins={[lazyload(), responsive(), accessibility(), placeholder()]}
         />
       ),
@@ -128,6 +141,25 @@ const Services = () => {
         ),
     },
     {
+      title: "المهنة",
+      dataIndex: "profession",
+      key: "profession",
+    },
+    {
+      title: "رقم بطاقة الصحافة",
+      align: "center",
+      dataIndex: "identifiant",
+      key: "identifiant",
+    },
+    {
+      title: "مدفوع",
+      align: "center",
+      width: 70,
+      dataIndex: "isPaid",
+      key: "isPaid",
+      render: (v) => (v ? <CheckCircleTwoTone /> : <CloseCircleTwoTone />),
+    },
+    {
       title: "البريد الالكتروني",
 
       dataIndex: "email",
@@ -135,24 +167,16 @@ const Services = () => {
       render: (v) => <span className={"font-ligh text-sm italic"}>{v}</span>,
     },
     {
-      title: "تاريخ الإنشاء",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      render: (v) => (
-        <span className={"text-[12px] opacity-60"}>
-          {moment(v).format(DATE_FORMAT)}
-        </span>
-      ),
+      title: "تاريخ الاشتراك",
+      dataIndex: "dateDebutAbonnement",
+      key: "dateDebutAbonnement",
+      render: (v) => <span className={"text-[12px] opacity-60"}>{v}</span>,
     },
     {
-      title: "تاريخ التعديل",
-      dataIndex: "updatedAt",
-      key: "updatedAt",
-      render: (v) => (
-        <span className={"text-[12px] opacity-60"}>
-          {moment(v).format(DATE_FORMAT)}
-        </span>
-      ),
+      title: "تاريخ نهاية الصلاحية",
+      dataIndex: "dateNouvelAbonnement",
+      key: "dateNouvelAbonnement",
+      render: (v) => <span className={"text-[12px] opacity-60"}>{v}</span>,
     },
     {
       title: "",
@@ -165,6 +189,7 @@ const Services = () => {
           }}
           onCard={() => {
             // setupdateMembre(d);
+            setcard(d);
           }}
           onDelete={() => {
             deleteMember({ id: d.id });
@@ -181,9 +206,8 @@ const Services = () => {
         return;
       }
       const newData = (data || []).filter((d) => {
-        return d.name.includes(v)||(d.email||"").includes(v)
-
-      })
+        return d.name.includes(v) || (d.email || "").includes(v);
+      });
       setDataFilter(newData || []);
     }
   };
@@ -206,8 +230,6 @@ const Services = () => {
       },
     });
 
-
-
   const onImport = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.currentTarget.files;
     if (files && files[0]) {
@@ -229,60 +251,63 @@ const Services = () => {
           /* Update state */
           toast.dismiss();
           const lines = data;
-          function familyStatus(v:string|undefined):"C"|"M"|"D"|undefined{
-            if(v===undefined)  return undefined
-              if(v.includes("أعزب")) return "C"
-               if(v.includes("متزوج")) return "M"
-                 if(v.includes("مطلق")) return "D"
-  
-                 return undefined
-             }
-  
-             function sifa(v:string|undefined):"A"|"P"|undefined{
-              if(v===undefined)  return undefined
-              if(v.includes("مهني")) return "P"
-              else return "A"
-  
-             }
+          function familyStatus(
+            v: string | undefined
+          ): "C" | "M" | "D" | undefined {
+            if (v === undefined) return undefined;
+            if (v.includes("أعزب")) return "C";
+            if (v.includes("متزوج")) return "M";
+            if (v.includes("مطلق")) return "D";
 
-             function stringToInt(v:string|undefined|number):number|undefined{
-              if(v===undefined)  return undefined
-              if(typeof v === "number") return v
-              return parseInt(v)
-             }
+            return undefined;
+          }
+
+          function sifa(v: string | undefined): "A" | "P" | undefined {
+            if (v === undefined) return undefined;
+            if (v.includes("مهني")) return "P";
+            else return "A";
+          }
+
+          function stringToInt(
+            v: string | undefined | number
+          ): number | undefined {
+            if (v === undefined) return undefined;
+            if (typeof v === "number") return v;
+            return parseInt(v);
+          }
           importAdherent(
-            lines.map((l: any,i:number) => {
-          
-              const obj={
-                name: l["النسب\n"]+" "+l["الاسم\n"],
-                sexe: l["الجنس"]&& l["الجنس"] === "انثى" ? "F" : "M",
-                familyStatus:familyStatus(l["الوضعية الاجتماعية"]),
+            lines.map((l: any, i: number) => {
+              const obj = {
+                name: l["النسب\n"] + " " + l["الاسم\n"],
+                sexe: l["الجنس"] && l["الجنس"] === "انثى" ? "F" : "M",
+                familyStatus: familyStatus(l["الوضعية الاجتماعية"]),
                 email: l["بريد الالكتروني"],
-                childrenNumber:stringToInt(l["عدد الاطفال"]),
-                identifiant:l["رقم بطاقة الصحافة"],
-                anneeTravail:l['عدد سنوات العمل'],
-                sifa:sifa(l["نوع"]),
-                lieuTravail:l["المؤسسة"],
-                createdAt:l["تاريخ التسجيل"]&& moment(l["تاريخ التسجيل"]).toDate().toISOString(),
-                dateNouvelAbonnement:l["تاريخ انتهاء الصلاحية"],
-                dateDebutAbonnement:l["تاريخ اعادة التسجيل"],
-                isPaid:l["مدفوع"] && l["مدفوع"]==="نعم"?true:false,
+                childrenNumber: stringToInt(l["عدد الاطفال"]),
+                identifiant: l["رقم بطاقة الصحافة"],
+                anneeTravail: l["عدد سنوات العمل"],
+                sifa: sifa(l["نوع"]),
+                lieuTravail: l["المؤسسة"],
+                createdAt:
+                  l["تاريخ التسجيل"] &&
+                  moment(l["تاريخ التسجيل"]).toDate().toISOString(),
+                dateNouvelAbonnement: l["تاريخ انتهاء الصلاحية"],
+                dateDebutAbonnement: l["تاريخ اعادة التسجيل"],
+                isPaid: l["مدفوع"] && l["مدفوع"] === "نعم" ? true : false,
                 tel: l["هاتف"],
-                address:l["عنوان"],
-                 num: stringToInt(l["رقم التسجيل"])
+                address: l["عنوان"],
+                num: stringToInt(l["رقم التسجيل"]),
                 //مكان الازدياد
                 //تاريخ الازدياد
                 //رقم بطاقة النقابة
-              
               };
-              if(i==0){
-                console.log(Object.keys(data[0]))
+              if (i == 0) {
+                console.log(Object.keys(data[0]));
               }
-              return obj
+              return obj;
             })
           );
           console.log("data", data);
-         
+
           //
         }
       };
@@ -291,100 +316,198 @@ const Services = () => {
   };
   return (
     <>
-    <CardAdherent/>
-    <DashboardLayout>
-      <div className="flex w-full flex-col items-center justify-center">
-        <h1 className="text-3xl font-bold text-gray-700">
-          انشطة وخدمات الجمعية
-        </h1>
-        <div className={""}>
-          <div className={"flex flex-row-reverse items-center gap-6 py-6 "}>
-            <Button
-              className={"flex flex-row items-center gap-2"}
-              onClick={onPickfile}
-              loading={uploadingAdherent}
-              size={"large"}
-            >
-              <UploadOutlined />
+      {card && <CardAdherent item={card} onClose={() => setcard(undefined)} />}
+      <DashboardLayout>
+        <div className="flex w-full flex-col items-center justify-center">
+          <h1 className="text-3xl font-bold text-gray-700">
+            انشطة وخدمات الجمعية
+          </h1>
+          <div className={""}>
+            <div className={"flex flex-row-reverse items-center gap-6 py-6 "}>
+              <Button
+                className={"flex flex-row items-center gap-2"}
+                onClick={onPickfile}
+                loading={uploadingAdherent}
+                size={"large"}
+              >
+                <UploadOutlined />
 
-              <input
-                onChange={onImport}
-                hidden
-                ref={fileRef}
-                type="file"
-                accept=".xlsx, .xls"
+                <input
+                  onChange={onImport}
+                  hidden
+                  ref={fileRef}
+                  type="file"
+                  accept=".xlsx, .xls"
+                />
+              </Button>
+              <AddMemberDialog
+                onAdd={() => refetch()}
+                membre={updateMembre}
+                onClose={() => setupdateMembre(undefined)}
               />
-            </Button>
-            <AddMemberDialog
-              onAdd={() => refetch()}
-              membre={updateMembre}
-              onClose={() => setupdateMembre(undefined)}
-            />
-            <Search
-              placeholder="اكتب بحثك"
-              allowClear
-              enterButton="ابحاث"
-              size="large"
-              className={"w-[300px]"}
-              onSearch={filter}
-            />
-            <div className={"flex-grow"}></div>
+              <Search
+                placeholder="اكتب بحثك"
+                allowClear
+                enterButton="ابحاث"
+                size="large"
+                className={"w-[300px]"}
+                onSearch={filter}
+              />
+              <div className={"flex-grow"}></div>
 
-            <ExportButton
-              tableName={"انشطة وخدمات الجمعية"}
-              data={dataFilter.map((d) => {
-                return {
-                  "الاسم":d.name,
-                  "الجنس":d.sexe=="M"?"ذكر":"انثى",
-                  "الوضعية الاجتماعية":d.familyStatus=="C"?"أعزب":d.familyStatus=="M"?"متزوج":"مطلق",
-                  "البريد الالكتروني":d.email,
-                  "عدد الاطفال":d.childrenNumber,
-                  "رقم بطاقة الصحافة":d.identifiant,
-                  "عدد سنوات العمل":d.anneeTravail,
-                  "نوع":d.sifa=="A"?"عام":"مهني",
-                  "المؤسسة":d.lieuTravail,
-                  "تاريخ التسجيل":d.createdAt,
-                  "تاريخ انتهاء الصلاحية":d.dateNouvelAbonnement,
-                  "تاريخ اعادة التسجيل":d.dateDebutAbonnement,
-                  "مدفوع":d.isPaid?"نعم":"لا",
-                  "هاتف":d.tel,
-                  "عنوان":d.address,
-                  "رقم التسجيل":d.num
+              <ExportButton
+                tableName={"انشطة وخدمات الجمعية"}
+                data={dataFilter.map((d) => {
+                  return {
+                    الاسم: d.name,
+                    الجنس: d.sexe == "M" ? "ذكر" : "انثى",
+                    "الوضعية الاجتماعية":
+                      d.familyStatus == "C"
+                        ? "أعزب"
+                        : d.familyStatus == "M"
+                        ? "متزوج"
+                        : "مطلق",
+                    "البريد الالكتروني": d.email,
+                    "عدد الاطفال": d.childrenNumber,
+                    "رقم بطاقة الصحافة": d.identifiant,
+                    "عدد سنوات العمل": d.anneeTravail,
+                    نوع: d.sifa == "A" ? "عام" : "مهني",
+                    المؤسسة: d.lieuTravail,
+                    "تاريخ التسجيل": d.createdAt,
+                    "تاريخ انتهاء الصلاحية": d.dateNouvelAbonnement,
+                    "تاريخ اعادة التسجيل": d.dateDebutAbonnement,
+                    مدفوع: d.isPaid ? "نعم" : "لا",
+                    هاتف: d.tel,
+                    عنوان: d.address,
+                    "رقم التسجيل": d.num,
+                  };
+                })}
+              />
+            </div>
 
-                };
-              })}
+            <MyTable
+              loading={isLoading}
+              data={dataFilter || []}
+              // xScroll={1000}
+
+              columns={columns as any}
+              // columns={columns.filter((c)=>options.includes(c.key))}
             />
           </div>
-
-          <MyTable
-            loading={isLoading}
-            data={dataFilter || []}
-            // xScroll={1000}
-
-            columns={columns as any}
-            // columns={columns.filter((c)=>options.includes(c.key))}
-          />
         </div>
-      </div>
-    </DashboardLayout>
+      </DashboardLayout>
     </>
   );
 };
 
 export default Services;
 
+const cardWidth = 324;
+const cardHeight = 204;
+const cardRadius = 10;
+const CardAdherent = ({
+  item,
+  onClose,
+}: {
+  item: Adherent;
+  onClose: () => void;
+}) => {
 
+  const onPrint=()=>{
+console.log("print")
+  }
+  return (
+    <>
+    <div    onClick={onClose} className="fixed bottom-[100px] left-0 z-[12000] flex h-screen w-screen flex-col items-center justify-end gap-6">
+    <Button  type="primary"
+    onClick={(e)=>{
+      e.stopPropagation()
+      //sdsjdjsd
 
+    }}
+    icon={<DownloadOutlined />} size={"large"}>
+    طبع
+         </Button>
+    </div>
+    <div
+      onClick={onClose}
+      className="fixed top-0 left-0 z-[10000] flex h-screen w-screen flex-col items-center justify-center gap-6 bg-black/70"
+    >
+      <div className="flex flex-row gap-10">
+     
+        <CardShape>
+          <div className="flex flex-row items-center justify-center">
+            <img src="/logo_2.png" style={{height:cardHeight}} className="object-contain" alt="logo_2"/>
+          </div>
+        </CardShape>
+        <CardShape>
+          <div className="flex flex-col items-stretch w-full h-full gap-1">
+       <div className="flex-grow flex flex-row items-stretch">
+   
+       <div className="flex flex-col flex-grow">
+  
+      <img src="/logo_large.png" style={{}} className="object-contain w-[220px]" alt="logo_2"/>
+      <div className="flex-grow flex flex-col items-start justify-center gap-1 text-sm">
+      <span>
+          {`رقم العضوية : ${item.identifiant||""}`}
+        </span>
+        <span>
+          {`الاسم الكامل : ${item.name||""}`}
+        </span> <span>
+          {`المؤسسة: ${item.lieuTravail||""}`}
+        </span> <span>
+          {`صالحة الى غاية : ${item.dateNouvelAbonnement||""}`}
+        </span> 
 
-const CardAdherent = () => {
-  return <div className="fixed top-0 left-0 w-screen h-screen bg-black/70 z-[10000]">
+      </div>
+       </div>
 
-  </div>
-}
+       <div className="w-[100px] flex flex-col">
+       <AdvancedImage
+          cldImg={cloudy
+            .image(
+              item.photoId ?  item.photoId : item.sexe == "F" ? "placeholder_female" : "placeholder_male"
+            )
+            .resize(thumbnail().width(90))}
+          plugins={[lazyload(), responsive(), accessibility(), placeholder()]}
+        />
+<span className="text-center text-blue-400">
+  {item.sifa==="A"?"منتسب":"مهني"}
+</span>
+        <span className="text-[10px] text-center leading-1 tracking-tighter">
+        امضاء رئيسة الجمعية
+        <br/>
+         حنان رحاب
+        </span>
+        <img src="/signature.png" style={{}} className="object-contain h-[30px]" alt="logo_2"/>
+        </div>
+     </div>
+     <div className="bg-blue-700 h-[1px]">
+     </div>
+     <div className="text-[11px] text-center">
 
+النقابة الوطنية للصحافة المغربية 25 شارع مولاي عبد الله الرباط 
+هاتف : 0537709331
+     </div>
+          </div>
+        </CardShape>
+      </div>
+    </div>
+    </>
+  );
+};
 
-
-
+const CardShape = ({ children }: { children: any }) => {
+  return (
+    <div
+    onClick={(e)=>e.stopPropagation()}
+      style={{ width: cardWidth, height: cardHeight, borderRadius: cardRadius }}
+      className="bg-white  p-6"
+    >
+      {children}
+    </div>
+  );
+};
 
 type TMember = {
   name: string;
@@ -432,7 +555,7 @@ const AddMemberDialog = ({
     if (membre) {
       setIsModalOpen(true);
       setValue("name", membre.name);
-      setValue("email", membre.email||"");
+      setValue("email", membre.email || "");
       setValue("tel", membre.tel || undefined);
       setValue("sexe", membre.sexe || "M");
       setValue("dateNaissance", membre.dateNaissance || undefined);
@@ -495,10 +618,7 @@ const AddMemberDialog = ({
       toast.error("يجب انتظار انتهاء رفع الصورة");
       return;
     }
-    if (
-      !data.name ||
-      !data.sexe 
-    ) {
+    if (!data.name || !data.sexe) {
       toast.error("يجب ملئ جميع الحقول");
       return;
     }
@@ -510,7 +630,7 @@ const AddMemberDialog = ({
       update({
         id: membre.id,
         name: data.name,
-        email: data.email||"",
+        email: data.email || "",
         sexe: data.sexe,
         dateNaissance: data.dateNaissance,
         lieuNaissance: data.lieuNaissance,
@@ -519,7 +639,7 @@ const AddMemberDialog = ({
         tel: data.tel,
         profession: data.profession,
         lieuTravail: data.lieuTravail,
-        cin: data.cin||"",
+        cin: data.cin || "",
         identifiant: data.identifiant,
         anneeTravail: data.anneeTravail,
         isPaid: data.isPaid,
@@ -531,7 +651,7 @@ const AddMemberDialog = ({
     else
       add({
         name: data.name,
-        email: data.email||"",
+        email: data.email || "",
         sexe: data.sexe,
         dateNaissance: data.dateNaissance,
         lieuNaissance: data.lieuNaissance,
@@ -540,7 +660,7 @@ const AddMemberDialog = ({
         tel: data.tel,
         profession: data.profession,
         lieuTravail: data.lieuTravail,
-        cin: data.cin||"",
+        cin: data.cin || "",
         identifiant: data.identifiant,
         anneeTravail: data.anneeTravail,
         isPaid: data.isPaid,

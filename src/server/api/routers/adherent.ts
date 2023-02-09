@@ -75,7 +75,7 @@ export const adherentRouter = createTRPCRouter({
   }),
   add: protectedProcedure.input(ZAdherent).mutation(({ input, ctx }) => {
 
-    const dateNouvelAbonnement = moment(input.dateDebutAbonnement).add(1, "year").format(DATE_FORMAT);
+    const dateNouvelAbonnement = moment(moment(input.dateDebutAbonnement).format(DATE_FORMAT)).add(1, "year").format(DATE_FORMAT);
     return ctx.prisma.adherent.create({
       data: {
         ...input,

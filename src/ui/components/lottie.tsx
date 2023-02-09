@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 import { useLottie } from 'lottie-react';
 import React, { type FunctionComponent } from 'react'
 
 type LottieProps={
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     animationData:any
 }
 

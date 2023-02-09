@@ -17,6 +17,13 @@ export const ADMINS: TUser[] = [
     password: "123456",
     isAdmin: true,
   },
+  {
+    name: "Oumaima",
+    email: "oumaima@gmail.com",
+    password: "123456",
+    isAdmin: true,
+  },
+
 ];
 
 export const COLORS = [
