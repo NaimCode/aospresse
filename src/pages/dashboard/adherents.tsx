@@ -20,6 +20,7 @@ import * as XLSX from "xlsx";
 import { fill, scale, thumbnail } from "@cloudinary/url-gen/actions/resize";
 import {
   Button,
+  ConfigProvider,
   DatePicker,
   Divider,
   Form,
@@ -433,6 +434,10 @@ console.log("print")
     طبع
          </Button>
     </div>
+    <ConfigProvider
+             direction='ltr'
+            >
+       
     <div
       onClick={onClose}
       ref={componentRef}
@@ -498,6 +503,7 @@ console.log("print")
         </CardShape>
       </div>
     </div>
+    </ConfigProvider>
     </>
   );
 };

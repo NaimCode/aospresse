@@ -17,7 +17,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
     return {
         redirect: {
-            destination: "/dashboard/members",
+            destination: "/dashboard/adherents",
             permanent: true,
         },
     };
