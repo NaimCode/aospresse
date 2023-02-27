@@ -4,7 +4,7 @@ import {memberRouter} from "@server/api/routers/member";
 import { categoryRouter } from "./routers/category";
 import {serviceRouter} from "@server/api/routers/service";
 import { adherentRouter } from "./routers/adherent";
-
+import { relationRouter } from "./routers/relation";
 /**
  * This is the primary router for your server.
  *
@@ -14,7 +14,8 @@ export const appRouter = createTRPCRouter({
  member:memberRouter,
  category:categoryRouter,
  service: serviceRouter,
- adherent:adherentRouter
+ adherent:adherentRouter,
+ relation:relationRouter
 });
 
 // export type definition of API

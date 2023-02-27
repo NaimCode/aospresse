@@ -61,7 +61,11 @@ model Adherent {
   lieuTravail  String?
   cin          String?
   identifiant  String?
+  identifiant2 String?
   anneeTravail String?
+
+  ville String?
+
   sifa        Sifa?
   isPaid Boolean @default(false)
 
@@ -71,7 +75,7 @@ model Adherent {
   photoId String?
   servicesId String[]
 
-  
+  relations Relation[]
 }
 
 model Service {
@@ -84,9 +88,23 @@ model Service {
  forChild Boolean @default(false)
  categoryId String
  category   Category @relation(fields: [categoryId], references: [id])
-
+relations Relation[]
 }
 
+model Relation{
+    id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  montant String
+  description String?
+  adherentId String
+  adherent Adherent @relation(fields: [adherentId], references: [id],onDelete: Cascade)
+
+  serviceId String
+  service Service @relation(fields: [serviceId], references: [id],onDelete: Cascade)
+  @@unique([adherentId, serviceId])
+}
 
 
 enum Sifa{

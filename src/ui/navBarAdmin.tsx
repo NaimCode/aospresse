@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import {useRouter} from "next/router";
 import {BiCategoryAlt} from "react-icons/bi";
 import { MdWorkOutline} from "react-icons/md";
-
+import {TbRelationOneToOne} from "react-icons/tb"
 import cx from "classnames";
 type TMenu = {
     title: string,
@@ -22,9 +22,15 @@ const menuItems: TMenu[] = [
     },
     {
         title:"المنخرطين",
+        icon: <TbRelationOneToOne />,
+        route: "/dashboard/relation"
+    },
+    {
+        title:"المنخرطين",
         icon: <TeamOutlined />,
         route: "/dashboard/adherents"
     },
+
     {
         title: "خدمات",
         icon: <MdWorkOutline />,

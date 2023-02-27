@@ -19,10 +19,12 @@ const ZAdherentImport = z.object({
   lieuTravail: z.string().optional(),
   cin: z.string().optional(),
   identifiant: z.string().optional(),
+  identifiant2: z.string().optional(),
   anneeTravail: z.string().optional(),
   isPaid: z.boolean(),
   sifa:z.enum(['A','P']).optional(),
   num:z.number().optional(),
+  ville: z.string().optional(),
   address:z.string().optional(),
   photoId: z.string().optional(),
   createdAt:z.string().optional(),
@@ -43,6 +45,8 @@ const ZAdherent = z.object({
   lieuTravail: z.string().optional(),
   cin: z.string(),
   identifiant: z.string().optional(),
+ ville: z.string().optional(),
+  identifiant2: z.string().optional(),
   anneeTravail: z.string().optional(),
   isPaid: z.boolean(),
   sifa:z.enum(['A','P']),
@@ -91,7 +95,7 @@ export const adherentRouter = createTRPCRouter({
       ctx.prisma.adherent.delete({ where: { id: input.id } })
     ),
   update: protectedProcedure
-
+    
     .input(z.object({ id: z.string() }).merge(ZAdherent))
 
     .mutation(({ input, ctx }) =>{

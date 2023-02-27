@@ -664,6 +664,8 @@ type TMember = {
   lieuTravail?: string;
   cin?: string;
   identifiant?: string;
+  ville?: string;
+  identifiant2?: string;
   anneeTravail?: string;
   isPaid: boolean;
   dateDebutAbonnement: string;
@@ -706,7 +708,9 @@ const AddMemberDialog = ({
       setValue("profession", membre.profession || undefined);
       setValue("lieuTravail", membre.lieuTravail || undefined);
       setValue("cin", membre.cin || "");
+      setValue("ville", membre.ville || undefined);
       setValue("identifiant", membre.identifiant || undefined);
+      setValue("identifiant2", membre.identifiant2 || undefined);
       setValue("anneeTravail", membre.anneeTravail || undefined);
       setValue("isPaid", membre.isPaid);
       setValue("photoId", membre.photoId || undefined);
@@ -782,6 +786,8 @@ const AddMemberDialog = ({
         lieuTravail: data.lieuTravail,
         cin: data.cin || "",
         identifiant: data.identifiant,
+        identifiant2: data.identifiant2,
+        ville: data.ville,
         anneeTravail: data.anneeTravail,
         isPaid: data.isPaid,
         sifa: data.sifa,
@@ -799,10 +805,12 @@ const AddMemberDialog = ({
         familyStatus: data.familyStatus,
         childrenNumber: data.childrenNumber,
         tel: data.tel,
+        ville: data.ville,
         profession: data.profession,
         lieuTravail: data.lieuTravail,
         cin: data.cin || "",
         identifiant: data.identifiant,
+        identifiant2: data.identifiant2,
         anneeTravail: data.anneeTravail,
         isPaid: data.isPaid,
         dateDebutAbonnement: data.dateDebutAbonnement,
@@ -952,8 +960,7 @@ const AddMemberDialog = ({
                 render={({ field }) => <Input {...field} />}
               />
             </Form.Item>
-            <div className="flex flex-row gap-2">
-              <Form.Item label="الصفة" labelCol={{ span: 0 }}>
+            <Form.Item label="الصفة" labelCol={{ span: 0 }}>
                 <Controller
                   name="sifa"
                   control={control}
@@ -966,12 +973,23 @@ const AddMemberDialog = ({
                   )}
                 />
               </Form.Item>
-              <Form.Item label="رقم بطاقة الصحافة / النقابة">
+            <div className="flex flex-row gap-2">
+            <Form.Item label="رقم بطاقة الصحافة">
                 <Controller
-                  name="identifiant"
+                  name="identifiant2"
                   defaultValue=""
                   control={control}
                   render={({ field }) => <Input {...field} />}
+                />
+              </Form.Item>
+              <Form.Item label="رقم بطاقة النقابة">
+                <Controller
+                  name="identifiant"
+                  defaultValue=""
+                  
+                 
+                  control={control}
+                  render={({ field }) => <Input  disabled={watch("sifa")==="P"} {...field} />}
                 />
               </Form.Item>
             </div>
@@ -998,20 +1016,10 @@ const AddMemberDialog = ({
                 />
               </Form.Item>
             </div>
-
-            <div className="flex flex-row gap-2">
-              <Form.Item label="سنوات الخبرة" className="w-1/2">
-                <Controller
-                  name="anneeTravail"
-                  defaultValue=""
-                  control={control}
-                  render={({ field }) => <Input {...field} />}
-                />
-              </Form.Item>
-              <Form.Item
+            <Form.Item
                 label="تاريخ الانخراط "
-                className="w-1/2"
-                labelCol={{ span: 10 }}
+                
+                labelCol={{ span: 5 }}
               >
                 <DatePicker
                   className="w-full"
@@ -1020,6 +1028,24 @@ const AddMemberDialog = ({
                       setValue("dateDebutAbonnement", e.format(DATE_FORMAT));
                     }
                   }}
+                />
+              </Form.Item>
+            <div className="flex flex-row gap-2">
+            
+              <Form.Item label="سنوات الخبرة" className="w-1/2">
+                <Controller
+                  name="anneeTravail"
+                  defaultValue=""
+                  control={control}
+                  render={({ field }) => <Input {...field} />}
+                />
+              </Form.Item>
+              <Form.Item label="الفرع" className="w-1/2">
+                <Controller
+                  name="ville"
+                  defaultValue=""
+                  control={control}
+                  render={({ field }) => <Input {...field} />}
                 />
               </Form.Item>
             </div>
@@ -1037,19 +1063,7 @@ const AddMemberDialog = ({
               />
             </Form.Item>
 
-            <Form.Item label="نوع النشاط" required labelCol={{ span: 5 }}>
-              <Select
-                optionFilterProp="children"
-                maxTagCount={"responsive"}
-                mode={"multiple"}
-                onChange={(value) => setValue("servicesId", value)}
-                loading={gettingService}
-                options={services?.map((c) => ({
-                  label: c.activite,
-                  value: c.id,
-                }))}
-              />
-            </Form.Item>
+           
           </div>
         </div>
       </Modal>
@@ -1069,3 +1083,326 @@ const AddMemberDialog = ({
   </Form.Item> 
  */
 }
+
+{/* <Form.Item label="نوع النشاط" required labelCol={{ span: 5 }}>
+<Select
+  optionFilterProp="children"
+  maxTagCount={"responsive"}
+  mode={"multiple"}
+  onChange={(value) => setValue("servicesId", value)}
+  loading={gettingService}
+  options={services?.map((c) => ({
+    label: c.activite,
+    value: c.id,
+  }))}
+/>
+</Form.Item> */}
+
+const ShowDialog = ({
+ 
+  membre,
+  onClose,
+  open,
+}: {
+  onClose: () => void;
+  open: boolean;
+  membre: Adherent | undefined;
+}) => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    setValue,
+    reset,
+    watch,
+    
+  } = useForm<TMember>();
+
+  useEffect(() => {
+    if (membre) {
+      setValue("name", membre.name);
+      setValue("email", membre.email || "");
+      setValue("tel", membre.tel || undefined);
+      setValue("sexe", membre.sexe || "M");
+      setValue("dateNaissance", membre.dateNaissance || undefined);
+      setValue("lieuNaissance", membre.lieuNaissance || undefined);
+      setValue("familyStatus", membre.familyStatus || "C");
+      setValue("childrenNumber", membre.childrenNumber || undefined);
+      setValue("profession", membre.profession || undefined);
+      setValue("lieuTravail", membre.lieuTravail || undefined);
+      setValue("cin", membre.cin || "");
+      setValue("ville", membre.ville || undefined);
+      setValue("identifiant", membre.identifiant || undefined);
+      setValue("identifiant2", membre.identifiant2 || undefined);
+      setValue("anneeTravail", membre.anneeTravail || undefined);
+      setValue("isPaid", membre.isPaid);
+      setValue("photoId", membre.photoId || undefined);
+      //FixMe: fix date
+      setValue("dateDebutAbonnement", membre.dateDebutAbonnement || "");
+      setValue("sifa", membre.sifa || "P");
+
+      setValue("servicesId", (membre as any).services);
+    }
+  }, [membre, setValue]);
+
+
+  const handleCancel = () => {
+    onClose();
+  };
+
+ 
+  return (
+    <>
+      <Modal
+       
+        open={open}
+        okButtonProps={{ hidden: true }}
+      
+        destroyOnClose={true}
+        width={900}
+        className="h-screen w-screen"
+        onCancel={handleCancel}
+      >
+        <div className="flex flex-row gap-6">
+          <div className="w-1/2 space-y-3 py-6">
+            <Form.Item label="صورة" required labelCol={{ span: 7 }}>
+               <AdvancedImage
+                    cldImg={cloudy
+                      .image(
+                       watch("photoId")
+                          ? watch("photoId")
+                          : watch("sexe") == "F"
+                          ? "placeholder_female"
+                          : "placeholder_male"
+                      )
+                      .resize(thumbnail().width(200))}
+                    plugins={[
+                      lazyload(),
+                      responsive(),
+                      accessibility(),
+                      placeholder(),
+                    ]}
+                  />
+            </Form.Item>
+            <Form.Item label="الإسم الكامل " required labelCol={{ span: 7 }}>
+              <Controller
+                name="name"
+                
+                defaultValue=""
+                control={control}
+                render={({ field }) => (
+                  <Input status={errors.name && "error"} {...field} disabled />
+                )}
+              />
+            </Form.Item>
+            <Form.Item label="الجنس" labelCol={{ span: 7 }}>
+              <Controller
+                name="sexe"
+                control={control}
+                defaultValue={"M"}
+                render={({ field }) => (
+                  <Radio.Group {...field} disabled>
+                    <Radio value={"M"}>ذكر</Radio>
+                    <Radio value={"F"}>أنثى</Radio>
+                  </Radio.Group>
+                )}
+              />
+            </Form.Item>
+            <Form.Item
+              label="البريد الالكتروني"
+              required
+              labelCol={{ span: 7 }}
+            >
+              <Controller
+                name="email"
+                defaultValue=""
+                control={control}
+                render={({ field }) => <Input type="email" {...field} disabled/>}
+              />
+            </Form.Item>
+
+            <Form.Item label="الهاتف" labelCol={{ span: 7 }}>
+              <Controller
+                name="tel"
+                defaultValue=""
+                control={control}
+                render={({ field }) => <Input type="number" {...field} />}
+              />
+            </Form.Item>
+            <Form.Item label="الوضعية الاجتماعية" labelCol={{ span: 7 }}>
+              <Controller
+                name="familyStatus"
+                control={control}
+                defaultValue="C"
+                render={({ field }) => (
+                  <Radio.Group {...field}>
+                    <Radio value={"C"}>عازب</Radio>
+                    <Radio value={"M"}>متزوج</Radio>
+                    <Radio value={"D"}>مطلق</Radio>
+                  </Radio.Group>
+                )}
+              />
+            </Form.Item>
+
+            <Form.Item
+              required={watch("familyStatus") != "C"}
+              label="عدد الأطفال"
+              labelCol={{ span: 7 }}
+            >
+              <Controller
+                name="childrenNumber"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    disabled={watch("familyStatus") == "C"}
+                    type="number"
+                    {...field}
+                    onChange={(e) =>
+                      setValue("childrenNumber", parseInt(e.target.value))
+                    }
+                  />
+                )}
+              />
+            </Form.Item>
+            <Form.Item label="تاريخ الميلاد" labelCol={{ span: 7 }}>
+              <DatePicker
+                className="w-full"
+                // value={dayjs}// Dayjswatch("dateNaissance")}
+                onChange={(e) =>
+                  setValue("dateNaissance", e?.format(DATE_FORMAT))
+                }
+              />
+            </Form.Item>
+            <Form.Item label="مكان الازدياد" labelCol={{ span: 7 }}>
+              <Controller
+                name="lieuNaissance"
+                defaultValue=""
+                control={control}
+                render={({ field }) => <Input {...field} />}
+              />
+            </Form.Item>
+          </div>
+
+          <Divider type="vertical" className="h-auto" />
+
+          <div className="w-1/2 py-6">
+            <Form.Item label="رقم البطاقة الوطنية" required>
+              <Controller
+                name="cin"
+                defaultValue=""
+                control={control}
+                render={({ field }) => <Input {...field} />}
+              />
+            </Form.Item>
+            <Form.Item label="الصفة" labelCol={{ span: 0 }}>
+                <Controller
+                  name="sifa"
+                  control={control}
+                  defaultValue="P"
+                  render={({ field }) => (
+                    <Radio.Group {...field}>
+                      <Radio value={"A"}>منتسب</Radio>
+                      <Radio value={"P"}>مهني</Radio>
+                    </Radio.Group>
+                  )}
+                />
+              </Form.Item>
+            <div className="flex flex-row gap-2">
+            <Form.Item label="رقم بطاقة الصحافة">
+                <Controller
+                  name="identifiant2"
+                  defaultValue=""
+                  control={control}
+                  render={({ field }) => <Input {...field} />}
+                />
+              </Form.Item>
+              <Form.Item label="رقم بطاقة النقابة">
+                <Controller
+                  name="identifiant"
+                  defaultValue=""
+                  
+                 
+                  control={control}
+                  render={({ field }) => <Input  disabled={watch("sifa")==="P"} {...field} />}
+                />
+              </Form.Item>
+            </div>
+
+            <div className="flex flex-row gap-2">
+              <Form.Item label="المهنة" className="w-1/2">
+                <Controller
+                  name="profession"
+                  defaultValue=""
+                  control={control}
+                  render={({ field }) => <Input {...field} />}
+                />
+              </Form.Item>
+              <Form.Item
+                label="المؤسسة المشغلة"
+                labelCol={{ span: 11 }}
+                className="w-1/2"
+              >
+                <Controller
+                  name="lieuTravail"
+                  defaultValue=""
+                  control={control}
+                  render={({ field }) => <Input {...field} />}
+                />
+              </Form.Item>
+            </div>
+            <Form.Item
+                label="تاريخ الانخراط "
+                
+                labelCol={{ span: 5 }}
+              >
+                <DatePicker
+                  className="w-full"
+                  onChange={(e) => {
+                    if (e) {
+                      setValue("dateDebutAbonnement", e.format(DATE_FORMAT));
+                    }
+                  }}
+                />
+              </Form.Item>
+            <div className="flex flex-row gap-2">
+            
+              <Form.Item label="سنوات الخبرة" className="w-1/2">
+                <Controller
+                  name="anneeTravail"
+                  defaultValue=""
+                  control={control}
+                  render={({ field }) => <Input {...field} />}
+                />
+              </Form.Item>
+              <Form.Item label="الفرع" className="w-1/2">
+                <Controller
+                  name="ville"
+                  defaultValue=""
+                  control={control}
+                  render={({ field }) => <Input {...field} />}
+                />
+              </Form.Item>
+            </div>
+            <Form.Item required label="واجب الانخراط" labelCol={{ span: 0 }}>
+              <Controller
+                name="isPaid"
+                control={control}
+                defaultValue={false}
+                render={({ field }) => (
+                  <Radio.Group {...field}>
+                    <Radio value={false}>لا</Radio>
+                    <Radio value={true}>نعم</Radio>
+                  </Radio.Group>
+                )}
+              />
+            </Form.Item>
+
+           
+          </div>
+        </div>
+      </Modal>
+    </>
+  );
+};

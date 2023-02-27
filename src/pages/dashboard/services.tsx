@@ -74,10 +74,11 @@ const Services = () => {
     },
     {
       title: "الوصف",
-      dataIndex: "description",
-      width: 400,
-      key: "description",
-      render: (v) => <p className={"opacity-70"}>{v}</p>,
+      dataIndex: "category",
+      width: 100,
+      align:"center",
+      key: "category",
+      render: (v) => <Tag color={v.color||"default"}>{v.name}</Tag>,
     },
 
     {
