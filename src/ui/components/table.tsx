@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -19,6 +20,8 @@ interface Props<T> {
   rowSelection?: TableRowSelection<TableType>;
   // eslint-disable-next-line @typescript-eslint/ban-types
   options?: Object;
+  onClickRow?: (record: any,index:any) => void;
+  rowClassName?:string
 }
 
 export type TableType = User | Category | Service |Adherent |any;
@@ -28,12 +31,15 @@ const MyTable: React.FC<Props<TableType>> = ({
   loading,
   options,
   rowSelection,
+  onClickRow,
+  rowClassName
 }) => {
   
   return (
     <Table
       // size="small"
-
+    
+      rowClassName={()=>rowClassName||""}
       //className="w-full"
       rowSelection={rowSelection}
       rowKey={(record) => record.id}

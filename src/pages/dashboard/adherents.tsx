@@ -105,7 +105,7 @@ const Services = () => {
   const columns: ColumnsType<Adherent> = [
     {
       title: "الإسم الكامل",
-
+   
       dataIndex: "photoId",
       key: "photoId",
       render: (v, a) => (
@@ -195,6 +195,9 @@ const Services = () => {
           }}
           onDelete={() => {
             deleteMember({ id: d.id });
+          }}
+          onView={()=>{
+            setShowDialog(d)
           }}
         />
       ),
@@ -316,8 +319,11 @@ const Services = () => {
       reader.readAsBinaryString(file);
     }
   };
+  const [showDialog, setShowDialog] = useState<Adherent|undefined>(undefined);
   return (
     <>
+    
+    <ShowDialog membre={showDialog} open={showDialog!=undefined} onClose={()=>setShowDialog(undefined)}/>
       {card && <CardAdherent item={card} onClose={() => setcard(undefined)} />}
       {card && <CardAdherentPrint item={card} onClose={() => setcard(undefined)} />}
       <DashboardLayout>
@@ -387,6 +393,8 @@ const Services = () => {
             </div>
 
             <MyTable
+            
+           //   rowClassName="cursor-pointer"
               loading={isLoading}
               data={dataFilter || []}
               // xScroll={1000}
@@ -420,23 +428,6 @@ const CardAdherent = ({
  
   return (
     <>
-      {/* <div
-        onClick={onClose}
-        className="fixed bottom-[100px] left-0 z-[12000] flex h-screen w-screen flex-col items-center justify-end gap-6"
-      >
-        <Button
-          type="primary"
-          onClick={(e) => {
-            e.stopPropagation();
-            handlePrint();
-          }}
-          icon={<DownloadOutlined />}
-          size={"large"}
-        >
-          طبع
-        </Button>
-      </div> */}
-
       <div
         onClick={onClose}
         ref={componentRef}
@@ -537,6 +528,7 @@ const CardAdherentPrint = ({
   };
   return (
     <>
+   
       <div
         onClick={onClose}
         className="fixed bottom-[100px] left-0 z-[12000] flex h-screen w-screen flex-col items-center justify-end gap-6"
@@ -934,6 +926,7 @@ const AddMemberDialog = ({
               <DatePicker
                 className="w-full"
                 // value={dayjs}// Dayjswatch("dateNaissance")}
+               // value={watch("dateNaissance")}
                 onChange={(e) =>
                   setValue("dateNaissance", e?.format(DATE_FORMAT))
                 }
@@ -989,7 +982,7 @@ const AddMemberDialog = ({
                   
                  
                   control={control}
-                  render={({ field }) => <Input  disabled={watch("sifa")==="P"} {...field} />}
+                  render={({ field }) => <Input  {...field} />}
                 />
               </Form.Item>
             </div>
@@ -1158,12 +1151,13 @@ const ShowDialog = ({
       <Modal
        
         open={open}
-        okButtonProps={{ hidden: true }}
-      
         destroyOnClose={true}
         width={900}
         className="h-screen w-screen"
         onCancel={handleCancel}
+        okButtonProps={{ hidden: true }}
+        cancelButtonProps={{hidden:true}}
+        footer={null}
       >
         <div className="flex flex-row gap-6">
           <div className="w-1/2 space-y-3 py-6">
@@ -1177,7 +1171,7 @@ const ShowDialog = ({
                           ? "placeholder_female"
                           : "placeholder_male"
                       )
-                      .resize(thumbnail().width(200))}
+                      .resize(thumbnail().width(150))}
                     plugins={[
                       lazyload(),
                       responsive(),
@@ -1193,7 +1187,9 @@ const ShowDialog = ({
                 defaultValue=""
                 control={control}
                 render={({ field }) => (
-                  <Input status={errors.name && "error"} {...field} disabled />
+                  <Input status={errors.name && "error"} {...field} onChange={(e)=>{
+                    console.log("")
+                  }} />
                 )}
               />
             </Form.Item>
@@ -1203,7 +1199,9 @@ const ShowDialog = ({
                 control={control}
                 defaultValue={"M"}
                 render={({ field }) => (
-                  <Radio.Group {...field} disabled>
+                  <Radio.Group {...field} onChange={(e)=>{
+                    console.log("")
+                  }} >
                     <Radio value={"M"}>ذكر</Radio>
                     <Radio value={"F"}>أنثى</Radio>
                   </Radio.Group>
@@ -1219,7 +1217,10 @@ const ShowDialog = ({
                 name="email"
                 defaultValue=""
                 control={control}
-                render={({ field }) => <Input type="email" {...field} disabled/>}
+                
+                render={({ field }) => <Input type="email" {...field} onChange={(e)=>{
+                  console.log("")
+                }}/>}
               />
             </Form.Item>
 
@@ -1228,7 +1229,9 @@ const ShowDialog = ({
                 name="tel"
                 defaultValue=""
                 control={control}
-                render={({ field }) => <Input type="number" {...field} />}
+                render={({ field }) => <Input type="number" {...field} onChange={(e)=>{
+                  console.log("")
+                }}/>}
               />
             </Form.Item>
             <Form.Item label="الوضعية الاجتماعية" labelCol={{ span: 7 }}>
@@ -1237,7 +1240,9 @@ const ShowDialog = ({
                 control={control}
                 defaultValue="C"
                 render={({ field }) => (
-                  <Radio.Group {...field}>
+                  <Radio.Group {...field} onChange={(e)=>{
+                    console.log("")
+                  }}>
                     <Radio value={"C"}>عازب</Radio>
                     <Radio value={"M"}>متزوج</Radio>
                     <Radio value={"D"}>مطلق</Radio>
@@ -1260,7 +1265,7 @@ const ShowDialog = ({
                     type="number"
                     {...field}
                     onChange={(e) =>
-                      setValue("childrenNumber", parseInt(e.target.value))
+                     console.log("")
                     }
                   />
                 )}
@@ -1269,10 +1274,11 @@ const ShowDialog = ({
             <Form.Item label="تاريخ الميلاد" labelCol={{ span: 7 }}>
               <DatePicker
                 className="w-full"
+                disabled
                 // value={dayjs}// Dayjswatch("dateNaissance")}
                 onChange={(e) =>
-                  setValue("dateNaissance", e?.format(DATE_FORMAT))
-                }
+                  console.log("")
+                 }
               />
             </Form.Item>
             <Form.Item label="مكان الازدياد" labelCol={{ span: 7 }}>
@@ -1280,7 +1286,9 @@ const ShowDialog = ({
                 name="lieuNaissance"
                 defaultValue=""
                 control={control}
-                render={({ field }) => <Input {...field} />}
+                render={({ field }) => <Input {...field}   onChange={(e) =>
+                  console.log("")
+                 }/>}
               />
             </Form.Item>
           </div>
@@ -1293,7 +1301,9 @@ const ShowDialog = ({
                 name="cin"
                 defaultValue=""
                 control={control}
-                render={({ field }) => <Input {...field} />}
+                render={({ field }) => <Input {...field}   onChange={(e) =>
+                  console.log("")
+                 }/>}
               />
             </Form.Item>
             <Form.Item label="الصفة" labelCol={{ span: 0 }}>
@@ -1302,7 +1312,9 @@ const ShowDialog = ({
                   control={control}
                   defaultValue="P"
                   render={({ field }) => (
-                    <Radio.Group {...field}>
+                    <Radio.Group {...field}   onChange={(e) =>
+                      console.log("")
+                     }>
                       <Radio value={"A"}>منتسب</Radio>
                       <Radio value={"P"}>مهني</Radio>
                     </Radio.Group>
@@ -1315,7 +1327,9 @@ const ShowDialog = ({
                   name="identifiant2"
                   defaultValue=""
                   control={control}
-                  render={({ field }) => <Input {...field} />}
+                  render={({ field }) => <Input {...field}   onChange={(e) =>
+                    console.log("")
+                   }/>}
                 />
               </Form.Item>
               <Form.Item label="رقم بطاقة النقابة">
@@ -1325,7 +1339,9 @@ const ShowDialog = ({
                   
                  
                   control={control}
-                  render={({ field }) => <Input  disabled={watch("sifa")==="P"} {...field} />}
+                  render={({ field }) => <Input   {...field}   onChange={(e) =>
+                    console.log("")
+                   }/>}
                 />
               </Form.Item>
             </div>
@@ -1336,7 +1352,9 @@ const ShowDialog = ({
                   name="profession"
                   defaultValue=""
                   control={control}
-                  render={({ field }) => <Input {...field} />}
+                  render={({ field }) => <Input {...field}   onChange={(e) =>
+                    console.log("")
+                   }/>}
                 />
               </Form.Item>
               <Form.Item
@@ -1348,7 +1366,9 @@ const ShowDialog = ({
                   name="lieuTravail"
                   defaultValue=""
                   control={control}
-                  render={({ field }) => <Input {...field} />}
+                  render={({ field }) => <Input {...field}   onChange={(e) =>
+                    console.log("")
+                   }/>}
                 />
               </Form.Item>
             </div>
@@ -1359,11 +1379,10 @@ const ShowDialog = ({
               >
                 <DatePicker
                   className="w-full"
-                  onChange={(e) => {
-                    if (e) {
-                      setValue("dateDebutAbonnement", e.format(DATE_FORMAT));
-                    }
-                  }}
+                  disabled
+                  onChange={(e) =>
+                    console.log("")
+                   }
                 />
               </Form.Item>
             <div className="flex flex-row gap-2">
@@ -1373,7 +1392,9 @@ const ShowDialog = ({
                   name="anneeTravail"
                   defaultValue=""
                   control={control}
-                  render={({ field }) => <Input {...field} />}
+                  render={({ field }) => <Input {...field}   onChange={(e) =>
+                    console.log("")
+                   }/>}
                 />
               </Form.Item>
               <Form.Item label="الفرع" className="w-1/2">
@@ -1381,7 +1402,9 @@ const ShowDialog = ({
                   name="ville"
                   defaultValue=""
                   control={control}
-                  render={({ field }) => <Input {...field} />}
+                  render={({ field }) => <Input {...field}   onChange={(e) =>
+                    console.log("")
+                   }/>}
                 />
               </Form.Item>
             </div>
@@ -1391,7 +1414,9 @@ const ShowDialog = ({
                 control={control}
                 defaultValue={false}
                 render={({ field }) => (
-                  <Radio.Group {...field}>
+                  <Radio.Group {...field}   onChange={(e) =>
+                    console.log("")
+                   }>
                     <Radio value={false}>لا</Radio>
                     <Radio value={true}>نعم</Radio>
                   </Radio.Group>
