@@ -147,7 +147,7 @@ const Relation = () => {
   return (
     <DashboardLayout>
       <div className="flex w-full flex-col items-center justify-center">
-        <h1 className="text-3xl font-bold text-gray-700">إدارة الفئة</h1>
+        <h1 className="text-3xl font-bold text-gray-700">خدمات المنخرطين</h1>
         <div className={""}>
           <div className={"flex flex-row-reverse items-center gap-6 py-6 "}>
             <MyDialog

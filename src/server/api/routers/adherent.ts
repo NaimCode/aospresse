@@ -12,7 +12,7 @@ const ZAdherentImport = z.object({
   sexe: z.enum(["M", "F"]).optional(),
   dateNaissance: z.string().optional(),
   lieuNaissance: z.string().optional(),
-  familyStatus: z.enum(["C", "M","D"]).optional(),
+  familyStatus: z.enum(["C", "M","D","V"]).optional(),
   childrenNumber: z.number().optional(),
   tel: z.string().optional(),
   profession: z.string().optional(),
@@ -30,7 +30,6 @@ const ZAdherentImport = z.object({
   createdAt:z.string().optional(),
   dateDebutAbonnement: z.string().optional(),
   dateNouvelAbonnement: z.string().optional(),
-  servicesId: z.array( z.string() ).optional().default([]),
 });
 const ZAdherent = z.object({
   name: z.string(),
@@ -38,7 +37,7 @@ const ZAdherent = z.object({
   sexe: z.enum(["M", "F"]),
   dateNaissance: z.string().optional(),
   lieuNaissance: z.string().optional(),
-  familyStatus: z.enum(["C", "M","D"]),
+  familyStatus: z.enum(["C", "M","D","V"]),
   childrenNumber: z.number().optional(),
   tel: z.string().optional(),
   profession: z.string().optional(),
@@ -56,7 +55,6 @@ const ZAdherent = z.object({
   
   createAt:z.string().optional(),
   dateDebutAbonnement: z.string(),
-  servicesId: z.array( z.string() ),
 });
 export const adherentRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async({ ctx }) => {
@@ -68,11 +66,7 @@ export const adherentRouter = createTRPCRouter({
       ])
 
 
-    return adherents.map((adherent) => ({
-      ...adherent,
-      services: services.filter((service) =>
-        adherent.servicesId.some((adherentService) => adherentService === service.id)
-      )}))
+    return adherents
 
     
 
@@ -126,26 +120,26 @@ export const adherentRouter = createTRPCRouter({
       })
     }
     ),
-  addService: protectedProcedure
-    .input(z.object({ id: z.string(), serviceId: z.string() }))
-    .mutation(({ input, ctx }) =>
-      ctx.prisma.adherent.update({
-        where: { id: input.id },
-        data: {
-          servicesId: {
-           push: input.serviceId,
-          },
-        },
-      })
-    ),
-  deleteService: protectedProcedure
-    .input(z.object({ id: z.string(), serviceId: z.string(),ids:z.array(z.string()) }))
-    .mutation(({ input, ctx }) =>
-      ctx.prisma.adherent.update({
-        where: { id: input.id },
-        data: {
-          servicesId: input.ids.filter((id) => id !== input.serviceId),
-        },
-      })
-    ),
+  // addService: protectedProcedure
+  //   .input(z.object({ id: z.string(), serviceId: z.string() }))
+  //   .mutation(({ input, ctx }) =>
+  //     ctx.prisma.adherent.update({
+  //       where: { id: input.id },
+  //       data: {
+  //         servicesId: {
+  //          push: input.serviceId,
+  //         },
+  //       },
+  //     })
+  //   ),
+  // deleteService: protectedProcedure
+  //   .input(z.object({ id: z.string(), serviceId: z.string(),ids:z.array(z.string()) }))
+  //   .mutation(({ input, ctx }) =>
+  //     ctx.prisma.adherent.update({
+  //       where: { id: input.id },
+  //       data: {
+  //         servicesId: input.ids.filter((id) => id !== input.serviceId),
+  //       },
+  //     })
+  //   ),
 });

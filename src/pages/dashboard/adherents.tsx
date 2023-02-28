@@ -648,7 +648,7 @@ type TMember = {
   sexe: "M" | "F";
   dateNaissance?: string;
   lieuNaissance?: string;
-  familyStatus: "C" | "M" | "D";
+  familyStatus: "C" | "M" | "D" |"V";
   sifa: "A" | "P";
   childrenNumber?: number;
   tel?: string;
@@ -661,7 +661,6 @@ type TMember = {
   anneeTravail?: string;
   isPaid: boolean;
   dateDebutAbonnement: string;
-  servicesId: string[];
   photoId?: string;
 };
 const AddMemberDialog = ({
@@ -710,7 +709,6 @@ const AddMemberDialog = ({
       setValue("dateDebutAbonnement", membre.dateDebutAbonnement || "");
       setValue("sifa", membre.sifa || "P");
 
-      setValue("servicesId", (membre as any).services);
     }
   }, [membre, setValue]);
 
@@ -785,7 +783,6 @@ const AddMemberDialog = ({
         sifa: data.sifa,
         photoId: data.photoId,
         dateDebutAbonnement: data.dateDebutAbonnement,
-        servicesId: data.servicesId,
       });
     else
       add({
@@ -808,7 +805,6 @@ const AddMemberDialog = ({
         dateDebutAbonnement: data.dateDebutAbonnement,
         sifa: data.sifa,
         photoId: data.photoId,
-        servicesId: data.servicesId,
       });
   };
 
@@ -897,6 +893,8 @@ const AddMemberDialog = ({
                     <Radio value={"C"}>عازب</Radio>
                     <Radio value={"M"}>متزوج</Radio>
                     <Radio value={"D"}>مطلق</Radio>
+
+                    <Radio value={"V"}>أرمل</Radio>
                   </Radio.Group>
                 )}
               />
@@ -1024,7 +1022,14 @@ const AddMemberDialog = ({
                 />
               </Form.Item>
             <div className="flex flex-row gap-2">
-            
+            <Form.Item label="الفرع" className="w-1/2">
+                <Controller
+                  name="ville"
+                  defaultValue=""
+                  control={control}
+                  render={({ field }) => <Input {...field} />}
+                />
+              </Form.Item>
               <Form.Item label="سنوات الخبرة" className="w-1/2">
                 <Controller
                   name="anneeTravail"
@@ -1033,14 +1038,7 @@ const AddMemberDialog = ({
                   render={({ field }) => <Input {...field} />}
                 />
               </Form.Item>
-              <Form.Item label="الفرع" className="w-1/2">
-                <Controller
-                  name="ville"
-                  defaultValue=""
-                  control={control}
-                  render={({ field }) => <Input {...field} />}
-                />
-              </Form.Item>
+          
             </div>
             <Form.Item required label="واجب الانخراط" labelCol={{ span: 0 }}>
               <Controller
@@ -1136,7 +1134,6 @@ const ShowDialog = ({
       setValue("dateDebutAbonnement", membre.dateDebutAbonnement || "");
       setValue("sifa", membre.sifa || "P");
 
-      setValue("servicesId", (membre as any).services);
     }
   }, [membre, setValue]);
 
@@ -1386,7 +1383,16 @@ const ShowDialog = ({
                 />
               </Form.Item>
             <div className="flex flex-row gap-2">
-            
+            <Form.Item label="الفرع" className="w-1/2">
+                <Controller
+                  name="ville"
+                  defaultValue=""
+                  control={control}
+                  render={({ field }) => <Input {...field}   onChange={(e) =>
+                    console.log("")
+                   }/>}
+                />
+              </Form.Item>
               <Form.Item label="سنوات الخبرة" className="w-1/2">
                 <Controller
                   name="anneeTravail"
@@ -1397,16 +1403,7 @@ const ShowDialog = ({
                    }/>}
                 />
               </Form.Item>
-              <Form.Item label="الفرع" className="w-1/2">
-                <Controller
-                  name="ville"
-                  defaultValue=""
-                  control={control}
-                  render={({ field }) => <Input {...field}   onChange={(e) =>
-                    console.log("")
-                   }/>}
-                />
-              </Form.Item>
+           
             </div>
             <Form.Item required label="واجب الانخراط" labelCol={{ span: 0 }}>
               <Controller

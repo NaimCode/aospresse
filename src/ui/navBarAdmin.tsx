@@ -21,7 +21,7 @@ const menuItems: TMenu[] = [
         route: "/dashboard/members"
     },
     {
-        title:"المنخرطين",
+        title:"خدمات المنخرطين",
         icon: <TbRelationOneToOne />,
         route: "/dashboard/relation"
     },

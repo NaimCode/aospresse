@@ -73,7 +73,7 @@ model Adherent {
   dateNouvelAbonnement String?
 
   photoId String?
-  servicesId String[]
+
 
   relations Relation[]
 }
@@ -115,6 +115,7 @@ enum FamilyStatus {
   C
   M
   D
+  V
 }
 
 enum Sexe {
