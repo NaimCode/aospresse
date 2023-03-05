@@ -1,3 +1,5 @@
+/* eslint-disable prefer-const */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
@@ -14,7 +16,7 @@ import type { Adherent, Service, User } from "@prisma/client";
 import { type ColumnsType } from "antd/lib/table";
 import MyTable, { ActionTable } from "@ui/components/table";
 import moment from "moment";
-
+import html2canvas from 'html2canvas';
 import idCard from "../../ui/idCard";
 import * as XLSX from "xlsx";
 import { fill, scale, thumbnail } from "@cloudinary/url-gen/actions/resize";
@@ -59,6 +61,7 @@ import {
 } from "@cloudinary/react";
 import { DATE_FORMAT } from "@config/index";
 import { useReactToPrint } from "react-to-print";
+import jsPDF from "jspdf";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession(ctx);
@@ -519,13 +522,67 @@ const CardAdherentPrint = ({
   item: Adherent;
   onClose: () => void;
 }) => {
-  const componentRef = useRef<HTMLDivElement>(null);
+  const componentRef = useRef<HTMLElement>(null);
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
   });
   const onPrint = () => {
     console.log("print");
   };
+
+  const handleDownloadImage = async () => {
+    const element = componentRef.current;
+    const canvas = await html2canvas(element||document.createElement('div'));
+
+    const data = canvas.toDataURL('image/jpg');
+    const link = document.createElement('a');
+
+    if (typeof link.download === 'string') {
+      link.href = data;
+      link.download = 'image.jpg';
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      window.open(data);
+    }
+  };
+ 
+  
+
+
+const toPDFi=()=>{
+  let elems = document.querySelectorAll('.elemClass');
+  console.log(elems)
+let pdf = new jsPDF("portrait", "mm", "a4") as any;
+pdf.scaleFactor = 2;
+
+// Fix Graphics Output by scaling PDF and html2canvas output to 2
+
+  const addPages = new Promise((resolve,reject)=>{
+    elems.forEach((elem, idx) => {
+      // Scaling fix set scale to 2
+      html2canvas(elem as any, {scale: 2})
+        .then(canvas =>{
+          if(idx < elems.length - 1){
+            pdf.addImage(canvas.toDataURL("image/png"), 0, 0, 210, 297);
+            pdf.addPage();
+          } else {
+            pdf.addImage(canvas.toDataURL("image/png"), 0, 0, 210, 297);
+            console.log("Reached last page, completing");
+          }
+    })
+    
+    setTimeout(resolve, 100, "Timeout adding page #" + idx);
+  })
+})
+  addPages.finally(()=>{
+     console.log("Saving PDF");
+     pdf.save();
+  });
+
+}
   return (
     <>
    
@@ -537,7 +594,9 @@ const CardAdherentPrint = ({
           type="primary"
           onClick={(e) => {
             e.stopPropagation();
-            handlePrint();
+           // await handleDownloadImage()
+          // toPDFi()
+        handlePrint();
           }}
           icon={<DownloadOutlined />}
           size={"large"}
@@ -548,11 +607,13 @@ const CardAdherentPrint = ({
 
       <div
         onClick={onClose}
-        ref={componentRef}
-        className="fixed top-0 left-0 z-[10000] flex h-screen w-screen flex-col items-center justify-center gap-6 bg-black/30"
+  
+        className="fixed top-0 left-0 z-[-10000] flex h-screen w-screen flex-col items-center justify-center gap-6 bg-black/30"
       >
-        <div className="flex flex-row gap-10">
-     
+        
+        <div       ref={componentRef as any} className="flex flex-col gap-10">
+          <div className="elemClass h-[93vh] p-5">
+         
           <CardShape>
             <div className="flex h-full w-full flex-col items-stretch gap-1">
               <div className="flex flex-grow flex-row items-stretch gap-3">
@@ -615,6 +676,8 @@ const CardAdherentPrint = ({
               </div>
             </div>
           </CardShape>
+          </div>
+          <div className="elemClass h-[96vh] p-5">
           <CardShape>
             <div className="flex flex-row items-center justify-center">
               <img
@@ -625,6 +688,7 @@ const CardAdherentPrint = ({
               />
             </div>
           </CardShape>
+          </div>
         </div>
       </div>
     </>

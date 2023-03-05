@@ -23,6 +23,18 @@ export const ADMINS: TUser[] = [
     password: "123456",
     isAdmin: true,
   },
+  {
+    name: "ibtissam",
+    email: "ibtissam@gmail.com",
+    password: "123456",
+    isAdmin: true,
+  },
+  {
+    name: "rajaa",
+    email: "rajaa@gmail.com",
+    password: "123456",
+    isAdmin: true,
+  },
 
 ];
 
