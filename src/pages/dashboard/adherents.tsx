@@ -523,66 +523,76 @@ const CardAdherentPrint = ({
   onClose: () => void;
 }) => {
   const componentRef = useRef<HTMLElement>(null);
+
   const handlePrint = useReactToPrint({
+    
     content: () => componentRef.current,
+    documentTitle:item.name,
+    pageStyle: `@media print {
+      @page {
+        size: 83.8962mm 57.0954mm;
+        margin: 0;
+      }
+    }`
+    
   });
-  const onPrint = () => {
-    console.log("print");
-  };
+//   const onPrint = () => {
+//     console.log("print");
+//   };
 
-  const handleDownloadImage = async () => {
-    const element = componentRef.current;
-    const canvas = await html2canvas(element||document.createElement('div'));
+//   const handleDownloadImage = async () => {
+//     const element = componentRef.current;
+//     const canvas = await html2canvas(element||document.createElement('div'));
 
-    const data = canvas.toDataURL('image/jpg');
-    const link = document.createElement('a');
+//     const data = canvas.toDataURL('image/jpg');
+//     const link = document.createElement('a');
 
-    if (typeof link.download === 'string') {
-      link.href = data;
-      link.download = 'image.jpg';
+//     if (typeof link.download === 'string') {
+//       link.href = data;
+//       link.download = 'image.jpg';
 
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else {
-      window.open(data);
-    }
-  };
+//       document.body.appendChild(link);
+//       link.click();
+//       document.body.removeChild(link);
+//     } else {
+//       window.open(data);
+//     }
+//   };
  
   
 
 
-const toPDFi=()=>{
-  let elems = document.querySelectorAll('.elemClass');
-  console.log(elems)
-let pdf = new jsPDF("portrait", "mm", "a4") as any;
-pdf.scaleFactor = 2;
+// const toPDFi=()=>{
+//   let elems = document.querySelectorAll('.elemClass');
+//   console.log(elems)
+// let pdf = new jsPDF("portrait", "mm", "a4") as any;
+// pdf.scaleFactor = 2;
 
-// Fix Graphics Output by scaling PDF and html2canvas output to 2
+// // Fix Graphics Output by scaling PDF and html2canvas output to 2
 
-  const addPages = new Promise((resolve,reject)=>{
-    elems.forEach((elem, idx) => {
-      // Scaling fix set scale to 2
-      html2canvas(elem as any, {scale: 2})
-        .then(canvas =>{
-          if(idx < elems.length - 1){
-            pdf.addImage(canvas.toDataURL("image/png"), 0, 0, 210, 297);
-            pdf.addPage();
-          } else {
-            pdf.addImage(canvas.toDataURL("image/png"), 0, 0, 210, 297);
-            console.log("Reached last page, completing");
-          }
-    })
+//   const addPages = new Promise((resolve,reject)=>{
+//     elems.forEach((elem, idx) => {
+//       // Scaling fix set scale to 2
+//       html2canvas(elem as any, {scale: 2})
+//         .then(canvas =>{
+//           if(idx < elems.length - 1){
+//             pdf.addImage(canvas.toDataURL("image/png"), 0, 0, 210, 297);
+//             pdf.addPage();
+//           } else {
+//             pdf.addImage(canvas.toDataURL("image/png"), 0, 0, 210, 297);
+//             console.log("Reached last page, completing");
+//           }
+//     })
     
-    setTimeout(resolve, 100, "Timeout adding page #" + idx);
-  })
-})
-  addPages.finally(()=>{
-     console.log("Saving PDF");
-     pdf.save();
-  });
+//     setTimeout(resolve, 100, "Timeout adding page #" + idx);
+//   })
+// })
+//   addPages.finally(()=>{
+//      console.log("Saving PDF");
+//      pdf.save();
+//   });
 
-}
+// }
 const imgRef=useRef(null)
 const [isLoading,setIsLoading]=useState(true)
 useEffect(()=>{
@@ -607,7 +617,7 @@ useEffect(()=>{
           // toPDFi()
           //print
           
-     toast.loading("جاري تحميل البطاقة")
+         toast.loading("جاري تحميل البطاقة")
           setTimeout(()=>{
             toast.dismiss()
             toast.success("تم تحميل البطاقة بنجاح")
@@ -625,13 +635,12 @@ useEffect(()=>{
       <div
         onClick={onClose}
   
-        className="fixed top-0 left-0 z-[-10000] flex h-screen w-screen flex-col items-center justify-center gap-6 bg-black/30"
+        className="fixed top-0 left-0 z-[-10000] flex h-screen w-screen flex-col items-center justify-center gap-6 bg-black/30 "
       >
         
-        <div       ref={componentRef as any} className="flex flex-col gap-10">
-          <div className="elemClass h-[93vh] p-5">
-         
-          <CardShape>
+        <div ref={componentRef as any} className="flex flex-col">
+   
+          <CardShape >
             <div className="flex h-full w-full flex-col items-stretch gap-1">
               <div className="flex flex-grow flex-row items-stretch gap-3">
               <div className="flex w-[100px] flex-col">
@@ -646,7 +655,7 @@ useEffect(()=>{
                           ? "placeholder_female"
                           : "placeholder_male"
                       )
-                      .resize(thumbnail().width(90))}
+                      .resize(thumbnail().width(400))}
                     plugins={[
                       lazyload(),
                       responsive(),
@@ -678,8 +687,8 @@ useEffect(()=>{
                   />
                   <div className="flex flex-grow flex-col items-end justify-center gap-1 text-sm ">
                     <span>{ `${item.identifiant || ""} : رقم العضوية`}</span>
-                    <span>{ `${item.name || ""} : الاسم الكامل`}</span>{" "}
-                    <span>{`${item.lieuTravail || ""} : المؤسسة`}</span>{" "}
+                    <span>{ `الاسم الكامل : ${item.name || ""}`}</span>{" "}
+                    <span>{`المؤسسة : ${item.lieuTravail || ""}`}</span>{" "}
                     <span>
                       {`${item.dateNouvelAbonnement || ""} : صالحة الى غاية`}
                     </span>
@@ -688,15 +697,13 @@ useEffect(()=>{
 
                
               </div>
-              <div className="h-[1px] bg-blue-700"></div>
+              <div className="h-[1px] bg-blue-700 w-full border"></div>
               <div className="text-center text-[11px]">
                 النقابة الوطنية للصحافة المغربية 25 شارع مولاي عبد الله الرباط
                 هاتف : 0537709331
               </div>
             </div>
           </CardShape>
-          </div>
-          <div className="elemClass h-[96vh] p-5">
           <CardShape>
             <div className="flex flex-row items-center justify-center">
               <img
@@ -707,16 +714,17 @@ useEffect(()=>{
               />
             </div>
           </CardShape>
-          </div>
+        
         </div>
       </div>
     </>
   );
 };
-const CardShape = ({ children }: { children: any }) => {
+const CardShape = ({ children,reff }: { children: any,reff?:any }) => {
   return (
     <div
       onClick={(e) => e.stopPropagation()}
+      ref={reff}
       style={{ width: cardWidth, height: cardHeight, borderRadius: cardRadius }}
       className="bg-white  p-6"
     >
