@@ -583,6 +583,15 @@ pdf.scaleFactor = 2;
   });
 
 }
+const imgRef=useRef(null)
+const [isLoading,setIsLoading]=useState(true)
+useEffect(()=>{
+  if(imgRef.current){
+    setIsLoading(false)
+  }else{
+    setIsLoading(true)
+  }
+},[imgRef])
   return (
     <>
    
@@ -596,7 +605,15 @@ pdf.scaleFactor = 2;
             e.stopPropagation();
            // await handleDownloadImage()
           // toPDFi()
-        handlePrint();
+          //print
+          
+     toast.loading("جاري تحميل البطاقة")
+          setTimeout(()=>{
+            toast.dismiss()
+            toast.success("تم تحميل البطاقة بنجاح")
+            handlePrint()
+          },2000)
+     
           }}
           icon={<DownloadOutlined />}
           size={"large"}
@@ -619,6 +636,8 @@ pdf.scaleFactor = 2;
               <div className="flex flex-grow flex-row items-stretch gap-3">
               <div className="flex w-[100px] flex-col">
                   <AdvancedImage
+                  
+                  ref={imgRef}
                     cldImg={cloudy
                       .image(
                         item.photoId
