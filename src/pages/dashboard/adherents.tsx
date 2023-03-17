@@ -16,10 +16,9 @@ import type { Adherent, Service, User } from "@prisma/client";
 import { type ColumnsType } from "antd/lib/table";
 import MyTable, { ActionTable } from "@ui/components/table";
 import moment from "moment";
-import html2canvas from 'html2canvas';
-import idCard from "../../ui/idCard";
 import * as XLSX from "xlsx";
 import { fill, scale, thumbnail } from "@cloudinary/url-gen/actions/resize";
+
 import {
   Button,
   ConfigProvider,
@@ -323,6 +322,7 @@ const Services = () => {
     }
   };
   const [showDialog, setShowDialog] = useState<Adherent|undefined>(undefined);
+  
   return (
     <>
     
@@ -438,10 +438,10 @@ const CardAdherent = ({
       >
         <div className="flex flex-row gap-10">
           <CardShape>
-            <div className="flex flex-row items-center justify-center">
+            <div className="flex flex-row  items-center justify-center h-full">
               <img
-                src="/logo_2.png"
-                style={{ height: cardHeight }}
+                src="/logo2.png"
+                style={{ height: cardHeight-60 }}
                 className="object-contain"
                 alt="logo_2"
               />
@@ -452,7 +452,7 @@ const CardAdherent = ({
               <div className="flex flex-grow flex-row items-stretch gap-3">
                 <div className="flex flex-grow flex-col">
                   <img
-                    src="/logo_large.png"
+                    src="/logo2.jpeg"
                     style={{}}
                     className="w-[220px] object-contain"
                     alt="logo_2"
@@ -502,9 +502,9 @@ const CardAdherent = ({
                 </div>
               </div>
               <div className="h-[1px] bg-blue-700"></div>
-              <div className="text-center text-[11px]">
-                النقابة الوطنية للصحافة المغربية 25 شارع مولاي عبد الله الرباط
-                هاتف : 0537709331
+              <div className="text-center text-[9px]">
+              العنوان:، 05 شارع باتريس لمومبا عمارة 25 مكرر – الرباط
+الهاتف 212537726121+/0663404100
               </div>
             </div>
           </CardShape>
@@ -533,7 +533,27 @@ const CardAdherentPrint = ({
         size: 83.8962mm 57.0954mm;
         margin: 0;
       }
-    }`
+    }`,
+    // copyStyles: true,
+		// print: async (printIframe: HTMLIFrameElement) => {
+		// 	const document = printIframe.contentDocument;
+		// 	if (document) {
+		// 		const html = document.getElementsByTagName('html')[0];
+    //     let doc = new jsPDF();
+    //     doc.html(html, {
+    //       callback: function(doc) {
+    //           // Save the PDF
+    //           doc.save('sample-document.pdf');
+    //       },
+    //       // x: 15,
+    //       // y: 15,
+    //       // width: 170, //target width in the PDF document
+    //       // windowWidth: 650 //window width in CSS pixels
+    //   });
+				// console.log(html);
+				// await print(html);
+			//}
+	//	}
     
   });
 //   const onPrint = () => {
@@ -680,7 +700,7 @@ useEffect(()=>{
                 </div>
                 <div className="flex flex-grow flex-col">
                   <img
-                    src="/logo_large.png"
+                    src="/logo2.jpeg"
                     style={{}}
                     className="w-[220px] object-contain"
                     alt="logo_2"
@@ -698,17 +718,17 @@ useEffect(()=>{
                
               </div>
               <div className="h-[1px] bg-blue-700 w-full border"></div>
-              <div className="text-center text-[11px]">
-                النقابة الوطنية للصحافة المغربية 25 شارع مولاي عبد الله الرباط
-                هاتف : 0537709331
+              <div className="text-center text-[9px]">
+              العنوان:، 05 شارع باتريس لمومبا عمارة 25 مكرر – الرباط
+الهاتف 212537726121+/0663404100
               </div>
             </div>
           </CardShape>
           <CardShape>
-            <div className="flex flex-row items-center justify-center">
+            <div className="flex h-full flex-row items-center justify-center">
               <img
-                src="/logo_2.png"
-                style={{ height: cardHeight }}
+                src="/logo2.png"
+                style={{ height: cardHeight-50 }}
                 className="object-contain"
                 alt="logo_2"
               />
