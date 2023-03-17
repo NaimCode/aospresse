@@ -318,6 +318,7 @@ const Services = () => {
           //
         }
       };
+      //
       reader.readAsBinaryString(file);
     }
   };
