@@ -60,7 +60,6 @@ import {
 } from "@cloudinary/react";
 import { DATE_FORMAT } from "@config/index";
 import { useReactToPrint } from "react-to-print";
-import jsPDF from "jspdf";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession(ctx);
