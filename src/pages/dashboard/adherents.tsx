@@ -106,7 +106,7 @@ const Services = () => {
   const columns: ColumnsType<Adherent> = [
     {
       title: "الإسم الكامل",
-   
+
       dataIndex: "photoId",
       key: "photoId",
       render: (v, a) => (
@@ -197,8 +197,8 @@ const Services = () => {
           onDelete={() => {
             deleteMember({ id: d.id });
           }}
-          onView={()=>{
-            setShowDialog(d)
+          onView={() => {
+            setShowDialog(d);
           }}
         />
       ),
@@ -321,14 +321,19 @@ const Services = () => {
       reader.readAsBinaryString(file);
     }
   };
-  const [showDialog, setShowDialog] = useState<Adherent|undefined>(undefined);
-  
+  const [showDialog, setShowDialog] = useState<Adherent | undefined>(undefined);
+
   return (
     <>
-    
-    <ShowDialog membre={showDialog} open={showDialog!=undefined} onClose={()=>setShowDialog(undefined)}/>
+      <ShowDialog
+        membre={showDialog}
+        open={showDialog != undefined}
+        onClose={() => setShowDialog(undefined)}
+      />
       {card && <CardAdherent item={card} onClose={() => setcard(undefined)} />}
-      {card && <CardAdherentPrint item={card} onClose={() => setcard(undefined)} />}
+      {card && (
+        <CardAdherentPrint item={card} onClose={() => setcard(undefined)} />
+      )}
       <DashboardLayout>
         <div className="flex w-full flex-col items-center justify-center">
           <h1 className="text-3xl font-bold text-gray-700">المنخرطين</h1>
@@ -396,8 +401,7 @@ const Services = () => {
             </div>
 
             <MyTable
-            
-           //   rowClassName="cursor-pointer"
+              //   rowClassName="cursor-pointer"
               loading={isLoading}
               data={dataFilter || []}
               // xScroll={1000}
@@ -428,7 +432,7 @@ const CardAdherent = ({
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
   });
- 
+
   return (
     <>
       <div
@@ -438,10 +442,10 @@ const CardAdherent = ({
       >
         <div className="flex flex-row gap-10">
           <CardShape>
-            <div className="flex flex-row  items-center justify-center h-full">
+            <div className="flex h-full  flex-row items-center justify-center">
               <img
                 src="/logo2.png"
-                style={{ height: cardHeight-60 }}
+                style={{ height: cardHeight - 60 }}
                 className="object-contain"
                 alt="logo_2"
               />
@@ -503,8 +507,8 @@ const CardAdherent = ({
               </div>
               <div className="h-[1px] bg-blue-700"></div>
               <div className="text-center text-[9px]">
-              العنوان:، 05 شارع باتريس لمومبا عمارة 25 مكرر – الرباط
-الهاتف 212537726121+/0663404100
+                العنوان:، 05 شارع باتريس لمومبا عمارة 25 مكرر – الرباط الهاتف
+                212537726121+/0663404100
               </div>
             </div>
           </CardShape>
@@ -513,7 +517,6 @@ const CardAdherent = ({
     </>
   );
 };
-
 
 const CardAdherentPrint = ({
   item,
@@ -525,9 +528,8 @@ const CardAdherentPrint = ({
   const componentRef = useRef<HTMLElement>(null);
 
   const handlePrint = useReactToPrint({
-    
     content: () => componentRef.current,
-    documentTitle:item.name,
+    documentTitle: item.name,
     pageStyle: `@media print {
       @page {
         size: 83.8962mm 57.0954mm;
@@ -535,10 +537,10 @@ const CardAdherentPrint = ({
       }
     }`,
     // copyStyles: true,
-		// print: async (printIframe: HTMLIFrameElement) => {
-		// 	const document = printIframe.contentDocument;
-		// 	if (document) {
-		// 		const html = document.getElementsByTagName('html')[0];
+    // print: async (printIframe: HTMLIFrameElement) => {
+    // 	const document = printIframe.contentDocument;
+    // 	if (document) {
+    // 		const html = document.getElementsByTagName('html')[0];
     //     let doc = new jsPDF();
     //     doc.html(html, {
     //       callback: function(doc) {
@@ -550,81 +552,76 @@ const CardAdherentPrint = ({
     //       // width: 170, //target width in the PDF document
     //       // windowWidth: 650 //window width in CSS pixels
     //   });
-				// console.log(html);
-				// await print(html);
-			//}
-	//	}
-    
+    // console.log(html);
+    // await print(html);
+    //}
+    //	}
   });
-//   const onPrint = () => {
-//     console.log("print");
-//   };
+  //   const onPrint = () => {
+  //     console.log("print");
+  //   };
 
-//   const handleDownloadImage = async () => {
-//     const element = componentRef.current;
-//     const canvas = await html2canvas(element||document.createElement('div'));
+  //   const handleDownloadImage = async () => {
+  //     const element = componentRef.current;
+  //     const canvas = await html2canvas(element||document.createElement('div'));
 
-//     const data = canvas.toDataURL('image/jpg');
-//     const link = document.createElement('a');
+  //     const data = canvas.toDataURL('image/jpg');
+  //     const link = document.createElement('a');
 
-//     if (typeof link.download === 'string') {
-//       link.href = data;
-//       link.download = 'image.jpg';
+  //     if (typeof link.download === 'string') {
+  //       link.href = data;
+  //       link.download = 'image.jpg';
 
-//       document.body.appendChild(link);
-//       link.click();
-//       document.body.removeChild(link);
-//     } else {
-//       window.open(data);
-//     }
-//   };
- 
-  
+  //       document.body.appendChild(link);
+  //       link.click();
+  //       document.body.removeChild(link);
+  //     } else {
+  //       window.open(data);
+  //     }
+  //   };
 
+  // const toPDFi=()=>{
+  //   let elems = document.querySelectorAll('.elemClass');
+  //   console.log(elems)
+  // let pdf = new jsPDF("portrait", "mm", "a4") as any;
+  // pdf.scaleFactor = 2;
 
-// const toPDFi=()=>{
-//   let elems = document.querySelectorAll('.elemClass');
-//   console.log(elems)
-// let pdf = new jsPDF("portrait", "mm", "a4") as any;
-// pdf.scaleFactor = 2;
+  // // Fix Graphics Output by scaling PDF and html2canvas output to 2
 
-// // Fix Graphics Output by scaling PDF and html2canvas output to 2
+  //   const addPages = new Promise((resolve,reject)=>{
+  //     elems.forEach((elem, idx) => {
+  //       // Scaling fix set scale to 2
+  //       html2canvas(elem as any, {scale: 2})
+  //         .then(canvas =>{
+  //           if(idx < elems.length - 1){
+  //             pdf.addImage(canvas.toDataURL("image/png"), 0, 0, 210, 297);
+  //             pdf.addPage();
+  //           } else {
+  //             pdf.addImage(canvas.toDataURL("image/png"), 0, 0, 210, 297);
+  //             console.log("Reached last page, completing");
+  //           }
+  //     })
 
-//   const addPages = new Promise((resolve,reject)=>{
-//     elems.forEach((elem, idx) => {
-//       // Scaling fix set scale to 2
-//       html2canvas(elem as any, {scale: 2})
-//         .then(canvas =>{
-//           if(idx < elems.length - 1){
-//             pdf.addImage(canvas.toDataURL("image/png"), 0, 0, 210, 297);
-//             pdf.addPage();
-//           } else {
-//             pdf.addImage(canvas.toDataURL("image/png"), 0, 0, 210, 297);
-//             console.log("Reached last page, completing");
-//           }
-//     })
-    
-//     setTimeout(resolve, 100, "Timeout adding page #" + idx);
-//   })
-// })
-//   addPages.finally(()=>{
-//      console.log("Saving PDF");
-//      pdf.save();
-//   });
+  //     setTimeout(resolve, 100, "Timeout adding page #" + idx);
+  //   })
+  // })
+  //   addPages.finally(()=>{
+  //      console.log("Saving PDF");
+  //      pdf.save();
+  //   });
 
-// }
-const imgRef=useRef(null)
-const [isLoading,setIsLoading]=useState(true)
-useEffect(()=>{
-  if(imgRef.current){
-    setIsLoading(false)
-  }else{
-    setIsLoading(true)
-  }
-},[imgRef])
+  // }
+  const imgRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    if (imgRef.current) {
+      setIsLoading(false);
+    } else {
+      setIsLoading(true);
+    }
+  }, [imgRef]);
   return (
     <>
-   
       <div
         onClick={onClose}
         className="fixed bottom-[100px] left-0 z-[12000] flex h-screen w-screen flex-col items-center justify-end gap-6"
@@ -633,17 +630,16 @@ useEffect(()=>{
           type="primary"
           onClick={(e) => {
             e.stopPropagation();
-           // await handleDownloadImage()
-          // toPDFi()
-          //print
-          
-         toast.loading("جاري تحميل البطاقة")
-          setTimeout(()=>{
-            toast.dismiss()
-            toast.success("تم تحميل البطاقة بنجاح")
-            handlePrint()
-          },2000)
-     
+            // await handleDownloadImage()
+            // toPDFi()
+            //print
+
+            toast.loading("جاري تحميل البطاقة");
+            setTimeout(() => {
+              toast.dismiss();
+              toast.success("تم تحميل البطاقة بنجاح");
+              handlePrint();
+            }, 2000);
           }}
           icon={<DownloadOutlined />}
           size={"large"}
@@ -654,19 +650,15 @@ useEffect(()=>{
 
       <div
         onClick={onClose}
-  
         className="fixed top-0 left-0 z-[-10000] flex h-screen w-screen flex-col items-center justify-center gap-6 bg-black/30 "
       >
-        
         <div ref={componentRef as any} className="flex flex-col">
-   
-          <CardShape >
+          <CardShape>
             <div className="flex h-full w-full flex-col items-stretch gap-1">
               <div className="flex flex-grow flex-row items-stretch gap-3">
-              <div className="flex w-[100px] flex-col">
+                <div className="flex w-[100px] flex-col">
                   <AdvancedImage
-                  
-                  ref={imgRef}
+                    ref={imgRef}
                     cldImg={cloudy
                       .image(
                         item.photoId
@@ -705,22 +697,24 @@ useEffect(()=>{
                     className="w-[220px] object-contain"
                     alt="logo_2"
                   />
-                  <div className="flex flex-grow flex-col items-end justify-center gap-1 text-sm ">
-                    <span>{ `${item.identifiant || ""} : رقم العضوية`}</span>
-                    <span>{ `الاسم الكامل : ${item.name || ""}`}</span>{" "}
+                  <div className="flex flex-grow flex-col items-end justify-center gap-1 text-lg ">
+                    <span>{`${item.identifiant || ""} : رقم العضوية`}</span>
+                    <span>{`الاسم الكامل : ${item.name || ""}`}</span>{" "}
                     <span>{`المؤسسة : ${item.lieuTravail || ""}`}</span>{" "}
                     <span>
-                      {`${item.dateNouvelAbonnement || ""} : صالحة الى غاية`}
+                      {`${
+                        item.dateNouvelAbonnement == "Invalid date"
+                          ? "---"
+                          : item.dateNouvelAbonnement || ""
+                      } : صالحة الى غاية`}
                     </span>
                   </div>
                 </div>
-
-               
               </div>
-              <div className="h-[1px] bg-blue-700 w-full border"></div>
+              <div className="h-[1px] w-full border bg-blue-700"></div>
               <div className="text-center text-[9px]">
-              العنوان:، 05 شارع باتريس لمومبا عمارة 25 مكرر – الرباط
-الهاتف 212537726121+/0663404100
+                العنوان:، 05 شارع باتريس لمومبا عمارة 25 مكرر – الرباط الهاتف
+                212537726121+/0663404100
               </div>
             </div>
           </CardShape>
@@ -728,19 +722,18 @@ useEffect(()=>{
             <div className="flex h-full flex-row items-center justify-center">
               <img
                 src="/logo2.png"
-                style={{ height: cardHeight-50 }}
+                style={{ height: cardHeight - 50 }}
                 className="object-contain"
                 alt="logo_2"
               />
             </div>
           </CardShape>
-        
         </div>
       </div>
     </>
   );
 };
-const CardShape = ({ children,reff }: { children: any,reff?:any }) => {
+const CardShape = ({ children, reff }: { children: any; reff?: any }) => {
   return (
     <div
       onClick={(e) => e.stopPropagation()}
@@ -759,7 +752,7 @@ type TMember = {
   sexe: "M" | "F";
   dateNaissance?: string;
   lieuNaissance?: string;
-  familyStatus: "C" | "M" | "D" |"V";
+  familyStatus: "C" | "M" | "D" | "V";
   sifa: "A" | "P";
   childrenNumber?: number;
   tel?: string;
@@ -819,7 +812,6 @@ const AddMemberDialog = ({
       //FixMe: fix date
       setValue("dateDebutAbonnement", membre.dateDebutAbonnement || "");
       setValue("sifa", membre.sifa || "P");
-
     }
   }, [membre, setValue]);
 
@@ -1035,7 +1027,7 @@ const AddMemberDialog = ({
               <DatePicker
                 className="w-full"
                 // value={dayjs}// Dayjswatch("dateNaissance")}
-               // value={watch("dateNaissance")}
+                // value={watch("dateNaissance")}
                 onChange={(e) =>
                   setValue("dateNaissance", e?.format(DATE_FORMAT))
                 }
@@ -1063,20 +1055,20 @@ const AddMemberDialog = ({
               />
             </Form.Item>
             <Form.Item label="الصفة" labelCol={{ span: 0 }}>
-                <Controller
-                  name="sifa"
-                  control={control}
-                  defaultValue="P"
-                  render={({ field }) => (
-                    <Radio.Group {...field}>
-                      <Radio value={"A"}>منتسب</Radio>
-                      <Radio value={"P"}>مهني</Radio>
-                    </Radio.Group>
-                  )}
-                />
-              </Form.Item>
+              <Controller
+                name="sifa"
+                control={control}
+                defaultValue="P"
+                render={({ field }) => (
+                  <Radio.Group {...field}>
+                    <Radio value={"A"}>منتسب</Radio>
+                    <Radio value={"P"}>مهني</Radio>
+                  </Radio.Group>
+                )}
+              />
+            </Form.Item>
             <div className="flex flex-row gap-2">
-            <Form.Item label="رقم بطاقة الصحافة">
+              <Form.Item label="رقم بطاقة الصحافة">
                 <Controller
                   name="identifiant2"
                   defaultValue=""
@@ -1088,10 +1080,8 @@ const AddMemberDialog = ({
                 <Controller
                   name="identifiant"
                   defaultValue=""
-                  
-                 
                   control={control}
-                  render={({ field }) => <Input  {...field} />}
+                  render={({ field }) => <Input {...field} />}
                 />
               </Form.Item>
             </div>
@@ -1118,22 +1108,18 @@ const AddMemberDialog = ({
                 />
               </Form.Item>
             </div>
-            <Form.Item
-                label="تاريخ الانخراط "
-                
-                labelCol={{ span: 5 }}
-              >
-                <DatePicker
-                  className="w-full"
-                  onChange={(e) => {
-                    if (e) {
-                      setValue("dateDebutAbonnement", e.format(DATE_FORMAT));
-                    }
-                  }}
-                />
-              </Form.Item>
+            <Form.Item label="تاريخ الانخراط " labelCol={{ span: 5 }}>
+              <DatePicker
+                className="w-full"
+                onChange={(e) => {
+                  if (e) {
+                    setValue("dateDebutAbonnement", e.format(DATE_FORMAT));
+                  }
+                }}
+              />
+            </Form.Item>
             <div className="flex flex-row gap-2">
-            <Form.Item label="الفرع" className="w-1/2">
+              <Form.Item label="الفرع" className="w-1/2">
                 <Controller
                   name="ville"
                   defaultValue=""
@@ -1149,7 +1135,6 @@ const AddMemberDialog = ({
                   render={({ field }) => <Input {...field} />}
                 />
               </Form.Item>
-          
             </div>
             <Form.Item required label="واجب الانخراط" labelCol={{ span: 0 }}>
               <Controller
@@ -1164,8 +1149,6 @@ const AddMemberDialog = ({
                 )}
               />
             </Form.Item>
-
-           
           </div>
         </div>
       </Modal>
@@ -1186,7 +1169,8 @@ const AddMemberDialog = ({
  */
 }
 
-{/* <Form.Item label="نوع النشاط" required labelCol={{ span: 5 }}>
+{
+  /* <Form.Item label="نوع النشاط" required labelCol={{ span: 5 }}>
 <Select
   optionFilterProp="children"
   maxTagCount={"responsive"}
@@ -1198,10 +1182,10 @@ const AddMemberDialog = ({
     value: c.id,
   }))}
 />
-</Form.Item> */}
+</Form.Item> */
+}
 
 const ShowDialog = ({
- 
   membre,
   onClose,
   open,
@@ -1219,7 +1203,6 @@ const ShowDialog = ({
     setValue,
     reset,
     watch,
-    
   } = useForm<TMember>();
 
   useEffect(() => {
@@ -1244,60 +1227,59 @@ const ShowDialog = ({
       //FixMe: fix date
       setValue("dateDebutAbonnement", membre.dateDebutAbonnement || "");
       setValue("sifa", membre.sifa || "P");
-
     }
   }, [membre, setValue]);
-
 
   const handleCancel = () => {
     onClose();
   };
 
- 
   return (
     <>
       <Modal
-       
         open={open}
         destroyOnClose={true}
         width={900}
         className="h-screen w-screen"
         onCancel={handleCancel}
         okButtonProps={{ hidden: true }}
-        cancelButtonProps={{hidden:true}}
+        cancelButtonProps={{ hidden: true }}
         footer={null}
       >
         <div className="flex flex-row gap-6">
           <div className="w-1/2 space-y-3 py-6">
             <Form.Item label="صورة" required labelCol={{ span: 7 }}>
-               <AdvancedImage
-                    cldImg={cloudy
-                      .image(
-                       watch("photoId")
-                          ? watch("photoId")
-                          : watch("sexe") == "F"
-                          ? "placeholder_female"
-                          : "placeholder_male"
-                      )
-                      .resize(thumbnail().width(150))}
-                    plugins={[
-                      lazyload(),
-                      responsive(),
-                      accessibility(),
-                      placeholder(),
-                    ]}
-                  />
+              <AdvancedImage
+                cldImg={cloudy
+                  .image(
+                    watch("photoId")
+                      ? watch("photoId")
+                      : watch("sexe") == "F"
+                      ? "placeholder_female"
+                      : "placeholder_male"
+                  )
+                  .resize(thumbnail().width(150))}
+                plugins={[
+                  lazyload(),
+                  responsive(),
+                  accessibility(),
+                  placeholder(),
+                ]}
+              />
             </Form.Item>
             <Form.Item label="الإسم الكامل " required labelCol={{ span: 7 }}>
               <Controller
                 name="name"
-                
                 defaultValue=""
                 control={control}
                 render={({ field }) => (
-                  <Input status={errors.name && "error"} {...field} onChange={(e)=>{
-                    console.log("")
-                  }} />
+                  <Input
+                    status={errors.name && "error"}
+                    {...field}
+                    onChange={(e) => {
+                      console.log("");
+                    }}
+                  />
                 )}
               />
             </Form.Item>
@@ -1307,9 +1289,12 @@ const ShowDialog = ({
                 control={control}
                 defaultValue={"M"}
                 render={({ field }) => (
-                  <Radio.Group {...field} onChange={(e)=>{
-                    console.log("")
-                  }} >
+                  <Radio.Group
+                    {...field}
+                    onChange={(e) => {
+                      console.log("");
+                    }}
+                  >
                     <Radio value={"M"}>ذكر</Radio>
                     <Radio value={"F"}>أنثى</Radio>
                   </Radio.Group>
@@ -1325,10 +1310,15 @@ const ShowDialog = ({
                 name="email"
                 defaultValue=""
                 control={control}
-                
-                render={({ field }) => <Input type="email" {...field} onChange={(e)=>{
-                  console.log("")
-                }}/>}
+                render={({ field }) => (
+                  <Input
+                    type="email"
+                    {...field}
+                    onChange={(e) => {
+                      console.log("");
+                    }}
+                  />
+                )}
               />
             </Form.Item>
 
@@ -1337,9 +1327,15 @@ const ShowDialog = ({
                 name="tel"
                 defaultValue=""
                 control={control}
-                render={({ field }) => <Input type="number" {...field} onChange={(e)=>{
-                  console.log("")
-                }}/>}
+                render={({ field }) => (
+                  <Input
+                    type="number"
+                    {...field}
+                    onChange={(e) => {
+                      console.log("");
+                    }}
+                  />
+                )}
               />
             </Form.Item>
             <Form.Item label="الوضعية الاجتماعية" labelCol={{ span: 7 }}>
@@ -1348,9 +1344,12 @@ const ShowDialog = ({
                 control={control}
                 defaultValue="C"
                 render={({ field }) => (
-                  <Radio.Group {...field} onChange={(e)=>{
-                    console.log("")
-                  }}>
+                  <Radio.Group
+                    {...field}
+                    onChange={(e) => {
+                      console.log("");
+                    }}
+                  >
                     <Radio value={"C"}>عازب</Radio>
                     <Radio value={"M"}>متزوج</Radio>
                     <Radio value={"D"}>مطلق</Radio>
@@ -1372,9 +1371,7 @@ const ShowDialog = ({
                     disabled={watch("familyStatus") == "C"}
                     type="number"
                     {...field}
-                    onChange={(e) =>
-                     console.log("")
-                    }
+                    onChange={(e) => console.log("")}
                   />
                 )}
               />
@@ -1384,9 +1381,7 @@ const ShowDialog = ({
                 className="w-full"
                 disabled
                 // value={dayjs}// Dayjswatch("dateNaissance")}
-                onChange={(e) =>
-                  console.log("")
-                 }
+                onChange={(e) => console.log("")}
               />
             </Form.Item>
             <Form.Item label="مكان الازدياد" labelCol={{ span: 7 }}>
@@ -1394,9 +1389,9 @@ const ShowDialog = ({
                 name="lieuNaissance"
                 defaultValue=""
                 control={control}
-                render={({ field }) => <Input {...field}   onChange={(e) =>
-                  console.log("")
-                 }/>}
+                render={({ field }) => (
+                  <Input {...field} onChange={(e) => console.log("")} />
+                )}
               />
             </Form.Item>
           </div>
@@ -1409,47 +1404,43 @@ const ShowDialog = ({
                 name="cin"
                 defaultValue=""
                 control={control}
-                render={({ field }) => <Input {...field}   onChange={(e) =>
-                  console.log("")
-                 }/>}
+                render={({ field }) => (
+                  <Input {...field} onChange={(e) => console.log("")} />
+                )}
               />
             </Form.Item>
             <Form.Item label="الصفة" labelCol={{ span: 0 }}>
-                <Controller
-                  name="sifa"
-                  control={control}
-                  defaultValue="P"
-                  render={({ field }) => (
-                    <Radio.Group {...field}   onChange={(e) =>
-                      console.log("")
-                     }>
-                      <Radio value={"A"}>منتسب</Radio>
-                      <Radio value={"P"}>مهني</Radio>
-                    </Radio.Group>
-                  )}
-                />
-              </Form.Item>
+              <Controller
+                name="sifa"
+                control={control}
+                defaultValue="P"
+                render={({ field }) => (
+                  <Radio.Group {...field} onChange={(e) => console.log("")}>
+                    <Radio value={"A"}>منتسب</Radio>
+                    <Radio value={"P"}>مهني</Radio>
+                  </Radio.Group>
+                )}
+              />
+            </Form.Item>
             <div className="flex flex-row gap-2">
-            <Form.Item label="رقم بطاقة الصحافة">
+              <Form.Item label="رقم بطاقة الصحافة">
                 <Controller
                   name="identifiant2"
                   defaultValue=""
                   control={control}
-                  render={({ field }) => <Input {...field}   onChange={(e) =>
-                    console.log("")
-                   }/>}
+                  render={({ field }) => (
+                    <Input {...field} onChange={(e) => console.log("")} />
+                  )}
                 />
               </Form.Item>
               <Form.Item label="رقم بطاقة النقابة">
                 <Controller
                   name="identifiant"
                   defaultValue=""
-                  
-                 
                   control={control}
-                  render={({ field }) => <Input   {...field}   onChange={(e) =>
-                    console.log("")
-                   }/>}
+                  render={({ field }) => (
+                    <Input {...field} onChange={(e) => console.log("")} />
+                  )}
                 />
               </Form.Item>
             </div>
@@ -1460,9 +1451,9 @@ const ShowDialog = ({
                   name="profession"
                   defaultValue=""
                   control={control}
-                  render={({ field }) => <Input {...field}   onChange={(e) =>
-                    console.log("")
-                   }/>}
+                  render={({ field }) => (
+                    <Input {...field} onChange={(e) => console.log("")} />
+                  )}
                 />
               </Form.Item>
               <Form.Item
@@ -1474,34 +1465,28 @@ const ShowDialog = ({
                   name="lieuTravail"
                   defaultValue=""
                   control={control}
-                  render={({ field }) => <Input {...field}   onChange={(e) =>
-                    console.log("")
-                   }/>}
+                  render={({ field }) => (
+                    <Input {...field} onChange={(e) => console.log("")} />
+                  )}
                 />
               </Form.Item>
             </div>
-            <Form.Item
-                label="تاريخ الانخراط "
-                
-                labelCol={{ span: 5 }}
-              >
-                <DatePicker
-                  className="w-full"
-                  disabled
-                  onChange={(e) =>
-                    console.log("")
-                   }
-                />
-              </Form.Item>
+            <Form.Item label="تاريخ الانخراط " labelCol={{ span: 5 }}>
+              <DatePicker
+                className="w-full"
+                disabled
+                onChange={(e) => console.log("")}
+              />
+            </Form.Item>
             <div className="flex flex-row gap-2">
-            <Form.Item label="الفرع" className="w-1/2">
+              <Form.Item label="الفرع" className="w-1/2">
                 <Controller
                   name="ville"
                   defaultValue=""
                   control={control}
-                  render={({ field }) => <Input {...field}   onChange={(e) =>
-                    console.log("")
-                   }/>}
+                  render={({ field }) => (
+                    <Input {...field} onChange={(e) => console.log("")} />
+                  )}
                 />
               </Form.Item>
               <Form.Item label="سنوات الخبرة" className="w-1/2">
@@ -1509,12 +1494,11 @@ const ShowDialog = ({
                   name="anneeTravail"
                   defaultValue=""
                   control={control}
-                  render={({ field }) => <Input {...field}   onChange={(e) =>
-                    console.log("")
-                   }/>}
+                  render={({ field }) => (
+                    <Input {...field} onChange={(e) => console.log("")} />
+                  )}
                 />
               </Form.Item>
-           
             </div>
             <Form.Item required label="واجب الانخراط" labelCol={{ span: 0 }}>
               <Controller
@@ -1522,17 +1506,13 @@ const ShowDialog = ({
                 control={control}
                 defaultValue={false}
                 render={({ field }) => (
-                  <Radio.Group {...field}   onChange={(e) =>
-                    console.log("")
-                   }>
+                  <Radio.Group {...field} onChange={(e) => console.log("")}>
                     <Radio value={false}>لا</Radio>
                     <Radio value={true}>نعم</Radio>
                   </Radio.Group>
                 )}
               />
             </Form.Item>
-
-           
           </div>
         </div>
       </Modal>
