@@ -8,7 +8,7 @@ import { z } from "zod";
 
 const ZAdherentImport = z.object({
   name: z.string(),
-  email: z.string().email().optional(),
+  email: z.string().optional(),
   sexe: z.enum(["M", "F"]).optional(),
   dateNaissance: z.string().optional(),
   lieuNaissance: z.string().optional(),
@@ -33,7 +33,7 @@ const ZAdherentImport = z.object({
 });
 const ZAdherent = z.object({
   name: z.string(),
-  email: z.string().email(),
+  email: z.string(),
   sexe: z.enum(["M", "F"]),
   dateNaissance: z.string().optional(),
   lieuNaissance: z.string().optional(),
