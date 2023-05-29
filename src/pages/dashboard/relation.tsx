@@ -12,7 +12,7 @@ import { Adherent, Relation, type Category } from "@prisma/client";
 import { type ColumnsType } from "antd/lib/table";
 import MyTable, { ActionTable } from "@ui/components/table";
 import moment from "moment";
-import { Button, Form, Input, Modal, Select, Switch } from "antd";
+import { Button, DatePicker, Form, Input, Modal, Select, Switch } from "antd";
 import { PlusOutlined, CheckOutlined } from "@ant-design/icons";
 import type { GetServerSideProps } from "next";
 import { getServerAuthSession } from "@server/auth";
@@ -91,7 +91,12 @@ const Relation = () => {
       key: "description",
       width: 400,
     },
-   
+    {
+      title: "تاريخ ",
+      dataIndex: "date",
+      key: "date",
+      render: (v) => <span className={"text-[12px] opacity-60"}>{v}</span>,
+    },
     {
       title: "تاريخ الإنشاء",
       dataIndex: "createdAt",
@@ -103,10 +108,14 @@ const Relation = () => {
       ),
     },
     {
-        title: "تاريخ التعديل",
-        dataIndex: "updatedAt",
-        key: "updatedAt",
-        render: (v) => <span className={"opacity-60 text-[12px]"}>{moment(v).format(DATE_FORMAT)}</span>,
+      title: "تاريخ التعديل",
+      dataIndex: "updatedAt",
+      key: "updatedAt",
+      render: (v) => (
+        <span className={"text-[12px] opacity-60"}>
+          {moment(v).format(DATE_FORMAT)}
+        </span>
+      ),
     },
     {
       title: "",
@@ -204,6 +213,7 @@ type TCategory = {
   serviceId: string;
   montant: string;
   description?: string;
+  date?: string;
 };
 const MyDialog = ({
   onAdd,
@@ -234,6 +244,7 @@ const MyDialog = ({
       setValue("adherentId", item.adherentId);
       setValue("montant", item.montant);
       setValue("description", item.description || undefined);
+      setValue("date", item.date || undefined);
     }
   }, [item, setValue]);
 
@@ -287,6 +298,7 @@ const MyDialog = ({
         serviceId: data.serviceId,
         montant: data.montant,
         description: data.description,
+        date: data.date,
       });
     else
       add({
@@ -294,6 +306,7 @@ const MyDialog = ({
         serviceId: data.serviceId,
         montant: data.montant,
         description: data.description,
+        date: data.date,
       });
   };
   const { data: adherents, isLoading: isGettingAdherents } =
@@ -379,6 +392,15 @@ const MyDialog = ({
             defaultValue=""
             control={control}
             render={({ field }) => <TextArea rows={4} {...field} />}
+          />
+        </Form.Item>
+
+        <Form.Item label="تاريخ" labelCol={{ span: 4 }}>
+          <DatePicker
+            className="w-full"
+            // value={dayjs}// Dayjswatch("dateNaissance")}
+            // value={watch("dateNaissance")}
+            onChange={(e) => setValue("date", e?.format(DATE_FORMAT))}
           />
         </Form.Item>
       </Modal>

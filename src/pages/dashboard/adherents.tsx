@@ -105,6 +105,14 @@ const Services = () => {
 
   const columns: ColumnsType<Adherent> = [
     {
+      dataIndex: "num",
+      key: "num",
+      align: "center",
+      width: 100,
+      title: "رقم",
+      render: (v) => <Tag>{v}</Tag>,
+    },
+    {
       title: "الإسم الكامل",
 
       dataIndex: "photoId",
@@ -149,7 +157,7 @@ const Services = () => {
       key: "profession",
     },
     {
-      title: "رقم بطاقة الصحافة",
+      title: "رقم بطاقة النقابة",
       align: "center",
       dataIndex: "identifiant",
       key: "identifiant",
@@ -518,6 +526,10 @@ const CardAdherent = ({
   );
 };
 
+function isArabic(text: string): boolean {
+  const pattern = /^(?!.*[\u0600-\u06FF]).*$/;
+  return pattern.test(text);
+}
 const CardAdherentPrint = ({
   item,
   onClose,
@@ -536,81 +548,8 @@ const CardAdherentPrint = ({
         margin: 0;
       }
     }`,
-    // copyStyles: true,
-    // print: async (printIframe: HTMLIFrameElement) => {
-    // 	const document = printIframe.contentDocument;
-    // 	if (document) {
-    // 		const html = document.getElementsByTagName('html')[0];
-    //     let doc = new jsPDF();
-    //     doc.html(html, {
-    //       callback: function(doc) {
-    //           // Save the PDF
-    //           doc.save('sample-document.pdf');
-    //       },
-    //       // x: 15,
-    //       // y: 15,
-    //       // width: 170, //target width in the PDF document
-    //       // windowWidth: 650 //window width in CSS pixels
-    //   });
-    // console.log(html);
-    // await print(html);
-    //}
-    //	}
   });
-  //   const onPrint = () => {
-  //     console.log("print");
-  //   };
 
-  //   const handleDownloadImage = async () => {
-  //     const element = componentRef.current;
-  //     const canvas = await html2canvas(element||document.createElement('div'));
-
-  //     const data = canvas.toDataURL('image/jpg');
-  //     const link = document.createElement('a');
-
-  //     if (typeof link.download === 'string') {
-  //       link.href = data;
-  //       link.download = 'image.jpg';
-
-  //       document.body.appendChild(link);
-  //       link.click();
-  //       document.body.removeChild(link);
-  //     } else {
-  //       window.open(data);
-  //     }
-  //   };
-
-  // const toPDFi=()=>{
-  //   let elems = document.querySelectorAll('.elemClass');
-  //   console.log(elems)
-  // let pdf = new jsPDF("portrait", "mm", "a4") as any;
-  // pdf.scaleFactor = 2;
-
-  // // Fix Graphics Output by scaling PDF and html2canvas output to 2
-
-  //   const addPages = new Promise((resolve,reject)=>{
-  //     elems.forEach((elem, idx) => {
-  //       // Scaling fix set scale to 2
-  //       html2canvas(elem as any, {scale: 2})
-  //         .then(canvas =>{
-  //           if(idx < elems.length - 1){
-  //             pdf.addImage(canvas.toDataURL("image/png"), 0, 0, 210, 297);
-  //             pdf.addPage();
-  //           } else {
-  //             pdf.addImage(canvas.toDataURL("image/png"), 0, 0, 210, 297);
-  //             console.log("Reached last page, completing");
-  //           }
-  //     })
-
-  //     setTimeout(resolve, 100, "Timeout adding page #" + idx);
-  //   })
-  // })
-  //   addPages.finally(()=>{
-  //      console.log("Saving PDF");
-  //      pdf.save();
-  //   });
-
-  // }
   const imgRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
@@ -699,7 +638,11 @@ const CardAdherentPrint = ({
                   />
                   <div className="flex flex-grow flex-col items-end justify-center gap-1 text-lg ">
                     <span>{`${item.identifiant || ""} : رقم العضوية`}</span>
-                    <span>{`الاسم الكامل : ${item.name || ""}`}</span>{" "}
+                    {isArabic(item.name) ? (
+                      <span>{`${item.name || ""} :الاسم الكامل`}</span>
+                    ) : (
+                      <span>{`الاسم الكامل : ${item.name || ""}`}</span>
+                    )}
                     <span>{`المؤسسة : ${item.lieuTravail || ""}`}</span>{" "}
                     <span>
                       {`${
@@ -712,7 +655,7 @@ const CardAdherentPrint = ({
                 </div>
               </div>
               <div className="h-[1px] w-full border bg-blue-700"></div>
-              <div className="text-center text-[9px]">
+              <div className="text-center text-[11px]">
                 العنوان:، 05 شارع باتريس لمومبا عمارة 25 مكرر – الرباط الهاتف
                 212537726121+/0663404100
               </div>
@@ -1068,7 +1011,7 @@ const AddMemberDialog = ({
               />
             </Form.Item>
             <div className="flex flex-row gap-2">
-              <Form.Item label="رقم بطاقة الصحافة">
+              <Form.Item label="رقم بطاقة الصحافة" labelCol={{ span: 20 }}>
                 <Controller
                   name="identifiant2"
                   defaultValue=""
@@ -1076,7 +1019,7 @@ const AddMemberDialog = ({
                   render={({ field }) => <Input {...field} />}
                 />
               </Form.Item>
-              <Form.Item label="رقم بطاقة النقابة">
+              <Form.Item label="رقم بطاقة النقابة" labelCol={{ span: 20 }}>
                 <Controller
                   name="identifiant"
                   defaultValue=""

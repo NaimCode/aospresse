@@ -16,6 +16,7 @@ export const relationRouter = createTRPCRouter({
         serviceId: z.string(),
         montant: z.string(),
         description: z.string().optional(),
+        date:z.string().optional()
       })
     )
     .mutation(({ input, ctx }) =>
@@ -38,6 +39,7 @@ export const relationRouter = createTRPCRouter({
             adherentId: z.string(),
             serviceId: z.string(),
             montant: z.string(),
+            date:z.string().optional(),
             description: z.string().optional(),
           
       })
