@@ -109,11 +109,11 @@ const Services = () => {
       key: "num",
       align: "center",
       width: 100,
-      title: "رقم",
+      title: "رقم العضوية",
       render: (v) => <Tag>{v}</Tag>,
     },
     {
-      title: "الإسم الكامل",
+      title: "صورة",
 
       dataIndex: "photoId",
       key: "photoId",
@@ -899,6 +899,13 @@ const AddMemberDialog = ({
                 setUploading={(b: boolean) => setUploading(b)}
               />
             </Form.Item>
+            <Form.Item label="رقم العضوية" labelCol={{ span: 7 }}>
+              <Controller
+                name="num"
+                control={control}
+                render={({ field }) => <Input {...field} type="number" />}
+              />
+            </Form.Item>
             <Form.Item label="الإسم الكامل " required labelCol={{ span: 7 }}>
               <Controller
                 name="name"
@@ -998,27 +1005,6 @@ const AddMemberDialog = ({
                 render={({ field }) => <Input {...field} />}
               />
             </Form.Item>
-
-            <Form.Item label="تاريخ البطاقة" labelCol={{ span: 7 }}>
-              <DatePicker
-                className="w-full"
-                // value={dayjs}// Dayjswatch("dateNaissance")}
-                // value={watch("dateNaissance")}
-                onChange={(e) => setValue("createdAt", e?.toDate())}
-              />
-            </Form.Item>
-            <Form.Item label="رقم الهوية" labelCol={{ span: 7 }}>
-              <Controller
-                name="num"
-                control={control}
-                render={({ field }) => <Input {...field} type="number" />}
-              />
-            </Form.Item>
-          </div>
-
-          <Divider type="vertical" className="h-auto" />
-
-          <div className="w-1/2 py-2">
             <Form.Item label="رقم البطاقة الوطنية" required>
               <Controller
                 name="cin"
@@ -1027,6 +1013,11 @@ const AddMemberDialog = ({
                 render={({ field }) => <Input {...field} />}
               />
             </Form.Item>
+          </div>
+
+          <Divider type="vertical" className="h-auto" />
+
+          <div className="w-1/2 py-2">
             <Form.Item label="الصفة" labelCol={{ span: 0 }}>
               <Controller
                 name="sifa"
@@ -1059,30 +1050,26 @@ const AddMemberDialog = ({
               </Form.Item>
             </div>
 
-            <div className="flex flex-row gap-2">
-              <Form.Item label="المهنة" className="w-1/2">
-                <Controller
-                  name="profession"
-                  defaultValue=""
-                  control={control}
-                  render={({ field }) => <Input {...field} />}
-                />
-              </Form.Item>
-              <Form.Item
-                label="المؤسسة المشغلة"
-                labelCol={{ span: 11 }}
-                className="w-1/2"
-              >
-                <Controller
-                  name="lieuTravail"
-                  defaultValue=""
-                  control={control}
-                  render={({ field }) => <Input {...field} />}
-                />
-              </Form.Item>
-            </div>
+            {/* <div className="flex flex-row gap-2"> */}
+            <Form.Item label="المهنة" labelCol={{ span: 5 }}>
+              <Controller
+                name="profession"
+                defaultValue=""
+                control={control}
+                render={({ field }) => <Input {...field} />}
+              />
+            </Form.Item>
+            <Form.Item label="المؤسسة المشغلة" labelCol={{ span: 5 }}>
+              <Controller
+                name="lieuTravail"
+                defaultValue=""
+                control={control}
+                render={({ field }) => <Input {...field} />}
+              />
+            </Form.Item>
+            {/* </div> */}
 
-            <Form.Item label="تاريخ الانخراط " labelCol={{ span: 5 }}>
+            <Form.Item label="تاريخ الاشتراك" labelCol={{ span: 5 }}>
               <DatePicker
                 className="w-full"
                 onChange={(e) => {
@@ -1092,6 +1079,16 @@ const AddMemberDialog = ({
                 }}
               />
             </Form.Item>
+
+            <Form.Item label="تاريخ التسجيل" labelCol={{ span: 5 }}>
+              <DatePicker
+                className="w-full"
+                // value={dayjs}// Dayjswatch("dateNaissance")}
+                // value={watch("dateNaissance")}
+                onChange={(e) => setValue("createdAt", e?.toDate())}
+              />
+            </Form.Item>
+
             <div className="flex flex-row gap-2">
               <Form.Item label="الفرع" className="w-1/2">
                 <Controller
