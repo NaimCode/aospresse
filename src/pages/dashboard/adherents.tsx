@@ -470,7 +470,7 @@ const CardAdherent = ({
                     alt="logo_2"
                   />
                   <div className="flex flex-grow flex-col items-start justify-center gap-1 text-sm">
-                    <span>{`رقم العضوية : ${item.identifiant || ""}`}</span>
+                    <span>{`رقم العضوية : ${item.num || ""}`}</span>
                     <span>{`الاسم الكامل : ${item.name || ""}`}</span>{" "}
                     <span>{`المؤسسة: ${item.lieuTravail || ""}`}</span>{" "}
                     <span>
@@ -589,7 +589,7 @@ const CardAdherentPrint = ({
 
       <div
         onClick={onClose}
-        className="fixed top-0 left-0 z-[-10000] flex h-screen w-screen flex-col items-center justify-center gap-6 bg-black/30 "
+        className="fixed top-0 left-0 z-[-10000] flex h-screen w-screen flex-col items-center justify-center gap-2 bg-black/30 "
       >
         <div ref={componentRef as any} className="flex flex-col">
           <CardShape>
@@ -637,13 +637,18 @@ const CardAdherentPrint = ({
                     alt="logo_2"
                   />
                   <div className="flex flex-grow flex-col items-end justify-center gap-1 text-lg ">
-                    <span>{`${item.identifiant || ""} : رقم العضوية`}</span>
+                    <span>{`${item.num || ""} : رقم العضوية`}</span>
                     {isArabic(item.name) ? (
                       <span>{`${item.name || ""} :الاسم الكامل`}</span>
                     ) : (
                       <span>{`الاسم الكامل : ${item.name || ""}`}</span>
                     )}
-                    <span>{`المؤسسة : ${item.lieuTravail || ""}`}</span>{" "}
+
+                    {isArabic(item.lieuTravail) ? (
+                      <span>{`${item.lieuTravail || ""} : المؤسسة`}</span>
+                    ) : (
+                      <span>{`المؤسسة : ${item.lieuTravail || ""}`}</span>
+                    )}
                     <span>
                       {`${
                         item.dateNouvelAbonnement == "Invalid date"
@@ -709,6 +714,8 @@ type TMember = {
   isPaid: boolean;
   dateDebutAbonnement: string;
   photoId?: string;
+  createdAt?: Date;
+  num?: number;
 };
 const AddMemberDialog = ({
   onAdd,
@@ -735,6 +742,7 @@ const AddMemberDialog = ({
   useEffect(() => {
     if (membre) {
       setIsModalOpen(true);
+
       setValue("name", membre.name);
       setValue("email", membre.email || "");
       setValue("tel", membre.tel || undefined);
@@ -755,6 +763,8 @@ const AddMemberDialog = ({
       //FixMe: fix date
       setValue("dateDebutAbonnement", membre.dateDebutAbonnement || "");
       setValue("sifa", membre.sifa || "P");
+      setValue("createdAt", membre.createdAt || undefined);
+      setValue("num", membre.num);
     }
   }, [membre, setValue]);
 
@@ -829,6 +839,8 @@ const AddMemberDialog = ({
         sifa: data.sifa,
         photoId: data.photoId,
         dateDebutAbonnement: data.dateDebutAbonnement,
+        createdAt: data.createdAt,
+        num: parseInt(data.num.toString()),
       });
     else
       add({
@@ -851,6 +863,8 @@ const AddMemberDialog = ({
         dateDebutAbonnement: data.dateDebutAbonnement,
         sifa: data.sifa,
         photoId: data.photoId,
+        createdAt: data.createdAt,
+        num: parseInt(data.num.toString()),
       });
   };
 
@@ -877,7 +891,7 @@ const AddMemberDialog = ({
         onCancel={handleCancel}
       >
         <div className="flex flex-row gap-6">
-          <div className="w-1/2 space-y-3 py-6">
+          <div className="w-1/2 space-y-1 py-6">
             <Form.Item label="صورة" required labelCol={{ span: 7 }}>
               <MyUpload
                 onSuccess={(key: string) => setValue("photoId", key)}
@@ -984,11 +998,28 @@ const AddMemberDialog = ({
                 render={({ field }) => <Input {...field} />}
               />
             </Form.Item>
+
+            <Form.Item label="تاريخ البطاقة" labelCol={{ span: 7 }}>
+              <DatePicker
+                className="w-full"
+                // value={dayjs}// Dayjswatch("dateNaissance")}
+                // value={watch("dateNaissance")}
+                onChange={(e) => setValue("createdAt", e?.toDate())}
+              />
+            </Form.Item>
+            <Form.Item label="رقم الهوية" labelCol={{ span: 7 }}>
+              <Controller
+                name="num"
+                defaultValue=""
+                control={control}
+                render={({ field }) => <Input {...field} type="number" />}
+              />
+            </Form.Item>
           </div>
 
           <Divider type="vertical" className="h-auto" />
 
-          <div className="w-1/2 py-6">
+          <div className="w-1/2 py-2">
             <Form.Item label="رقم البطاقة الوطنية" required>
               <Controller
                 name="cin"
@@ -1051,6 +1082,7 @@ const AddMemberDialog = ({
                 />
               </Form.Item>
             </div>
+
             <Form.Item label="تاريخ الانخراط " labelCol={{ span: 5 }}>
               <DatePicker
                 className="w-full"

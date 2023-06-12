@@ -12,7 +12,7 @@ const ZAdherentImport = z.object({
   sexe: z.enum(["M", "F"]).optional(),
   dateNaissance: z.string().optional(),
   lieuNaissance: z.string().optional(),
-  familyStatus: z.enum(["C", "M","D","V"]).optional(),
+  familyStatus: z.enum(["C", "M", "D", "V"]).optional(),
   childrenNumber: z.number().optional(),
   tel: z.string().optional(),
   profession: z.string().optional(),
@@ -22,12 +22,12 @@ const ZAdherentImport = z.object({
   identifiant2: z.string().optional(),
   anneeTravail: z.string().optional(),
   isPaid: z.boolean(),
-  sifa:z.enum(['A','P']).optional(),
-  num:z.number().optional(),
+  sifa: z.enum(["A", "P"]).optional(),
+  num: z.number().optional(),
   ville: z.string().optional(),
-  address:z.string().optional(),
+  address: z.string().optional(),
   photoId: z.string().optional(),
-  createdAt:z.string().optional(),
+  createdAt: z.date().optional(),
   dateDebutAbonnement: z.string().optional(),
   dateNouvelAbonnement: z.string().optional(),
 });
@@ -37,47 +37,47 @@ const ZAdherent = z.object({
   sexe: z.enum(["M", "F"]),
   dateNaissance: z.string().optional(),
   lieuNaissance: z.string().optional(),
-  familyStatus: z.enum(["C", "M","D","V"]),
+  familyStatus: z.enum(["C", "M", "D", "V"]),
   childrenNumber: z.number().optional(),
   tel: z.string().optional(),
   profession: z.string().optional(),
   lieuTravail: z.string().optional(),
   cin: z.string(),
   identifiant: z.string().optional(),
- ville: z.string().optional(),
+  ville: z.string().optional(),
   identifiant2: z.string().optional(),
   anneeTravail: z.string().optional(),
   isPaid: z.boolean(),
-  sifa:z.enum(['A','P']),
-  num:z.number().optional(),
-  address:z.string().optional(),
+  sifa: z.enum(["A", "P"]),
+  num: z.number().optional(),
+  address: z.string().optional(),
   photoId: z.string(),
-  
-  createAt:z.string().optional(),
+
+  createdAt: z.date().optional(),
   dateDebutAbonnement: z.string(),
 });
 export const adherentRouter = createTRPCRouter({
-  getAll: protectedProcedure.query(async({ ctx }) => {
+  getAll: protectedProcedure.query(async ({ ctx }) => {
     const { prisma } = ctx;
-    const [adherents,services] = await prisma.$transaction([
+    const [adherents, services] = await prisma.$transaction([
       prisma.adherent.findMany({
-        orderBy: { createdAt: "desc" }}),
-        prisma.service.findMany()
-      ])
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.service.findMany(),
+    ]);
 
-
-    return adherents
-
-    
-
+    return adherents;
   }),
   add: protectedProcedure.input(ZAdherent).mutation(({ input, ctx }) => {
-
-    const dateNouvelAbonnement = moment(moment(input.dateDebutAbonnement).format(DATE_FORMAT)).add(1, "year").format(DATE_FORMAT);
+    const dateNouvelAbonnement = moment(
+      moment(input.dateDebutAbonnement).format(DATE_FORMAT)
+    )
+      .add(1, "year")
+      .format(DATE_FORMAT);
     return ctx.prisma.adherent.create({
       data: {
         ...input,
-        dateNouvelAbonnement
+        dateNouvelAbonnement,
       },
     });
   }),
@@ -89,37 +89,40 @@ export const adherentRouter = createTRPCRouter({
       ctx.prisma.adherent.delete({ where: { id: input.id } })
     ),
   update: protectedProcedure
-    
+
     .input(z.object({ id: z.string() }).merge(ZAdherent))
 
-    .mutation(({ input, ctx }) =>{
-      const dateNouvelAbonnement = moment(input.dateDebutAbonnement).add(1, "year").format(DATE_FORMAT);
+    .mutation(({ input, ctx }) => {
+      const dateNouvelAbonnement = moment(input.dateDebutAbonnement)
+        .add(1, "year")
+        .format(DATE_FORMAT);
       return ctx.prisma.adherent.update({
         where: { id: input.id },
         data: {
           ...input,
           dateNouvelAbonnement,
-       
         },
-      })
-    }
-    ),
+      });
+    }),
 
-    import: protectedProcedure
+  import: protectedProcedure
 
     .input(z.array(ZAdherentImport))
 
-    .mutation(({ input, ctx }) =>{
-     // const dateNouvelAbonnement = moment(input.dateDebutAbonnement).add(1, "year").format("DD-MM-YYYY");
+    .mutation(({ input, ctx }) => {
+      // const dateNouvelAbonnement = moment(input.dateDebutAbonnement).add(1, "year").format("DD-MM-YYYY");
       return ctx.prisma.adherent.createMany({
         data: input.map((adherent) => ({
           ...adherent,
-          dateNouvelAbonnement:adherent.dateNouvelAbonnement?adherent.dateNouvelAbonnement:moment(adherent.dateDebutAbonnement).add(1, "year").format(DATE_FORMAT),
+          dateNouvelAbonnement: adherent.dateNouvelAbonnement
+            ? adherent.dateNouvelAbonnement
+            : moment(adherent.dateDebutAbonnement)
+                .add(1, "year")
+                .format(DATE_FORMAT),
         })),
         skipDuplicates: true,
-      })
-    }
-    ),
+      });
+    }),
   // addService: protectedProcedure
   //   .input(z.object({ id: z.string(), serviceId: z.string() }))
   //   .mutation(({ input, ctx }) =>
