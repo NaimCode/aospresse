@@ -644,7 +644,7 @@ const CardAdherentPrint = ({
                       <span>{`الاسم الكامل : ${item.name || ""}`}</span>
                     )}
 
-                    {isArabic(item.lieuTravail) ? (
+                    {isArabic(item.lieuTravail || "---") ? (
                       <span>{`${item.lieuTravail || ""} : المؤسسة`}</span>
                     ) : (
                       <span>{`المؤسسة : ${item.lieuTravail || ""}`}</span>
@@ -840,7 +840,7 @@ const AddMemberDialog = ({
         photoId: data.photoId,
         dateDebutAbonnement: data.dateDebutAbonnement,
         createdAt: data.createdAt,
-        num: parseInt(data.num.toString()),
+        num: data.num ? parseInt(data.num.toString()) : undefined,
       });
     else
       add({
@@ -864,7 +864,7 @@ const AddMemberDialog = ({
         sifa: data.sifa,
         photoId: data.photoId,
         createdAt: data.createdAt,
-        num: parseInt(data.num.toString()),
+        num: data.num ? parseInt(data.num.toString()) : undefined,
       });
   };
 
@@ -1010,7 +1010,6 @@ const AddMemberDialog = ({
             <Form.Item label="رقم الهوية" labelCol={{ span: 7 }}>
               <Controller
                 name="num"
-                defaultValue=""
                 control={control}
                 render={({ field }) => <Input {...field} type="number" />}
               />
