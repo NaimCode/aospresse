@@ -18,6 +18,7 @@ import MyTable, { ActionTable } from "@ui/components/table";
 import moment from "moment";
 import * as XLSX from "xlsx";
 import { fill, scale, thumbnail } from "@cloudinary/url-gen/actions/resize";
+import dayjs from "dayjs";
 
 import {
   Button,
@@ -761,7 +762,10 @@ const AddMemberDialog = ({
       setValue("isPaid", membre.isPaid);
       setValue("photoId", membre.photoId || undefined);
       //FixMe: fix date
-      setValue("dateDebutAbonnement", membre.dateDebutAbonnement || "");
+      setValue(
+        "dateDebutAbonnement",
+        membre.dateDebutAbonnement || new Date().toString()
+      );
       setValue("sifa", membre.sifa || "P");
       setValue("createdAt", membre.createdAt || undefined);
       setValue("num", membre.num);
@@ -1072,6 +1076,8 @@ const AddMemberDialog = ({
             <Form.Item label="تاريخ الاشتراك" labelCol={{ span: 5 }}>
               <DatePicker
                 className="w-full"
+                placeholder={watch("dateDebutAbonnement")}
+                //value={moment(watch("dateDebutAbonnement")).toDate()}
                 onChange={(e) => {
                   if (e) {
                     setValue("dateDebutAbonnement", e.format(DATE_FORMAT));

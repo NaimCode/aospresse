@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -69,11 +70,12 @@ export const adherentRouter = createTRPCRouter({
     return adherents;
   }),
   add: protectedProcedure.input(ZAdherent).mutation(({ input, ctx }) => {
-    const dateNouvelAbonnement = moment(
-      moment(input.dateDebutAbonnement).format(DATE_FORMAT)
-    )
+    console.log("input.dateDebutAbonnement", input.dateDebutAbonnement);
+    const dateNouvelAbonnement = moment(input.dateDebutAbonnement, DATE_FORMAT)
       .add(1, "year")
       .format(DATE_FORMAT);
+    console.log("dataNouvelAbonnement", dateNouvelAbonnement);
+
     return ctx.prisma.adherent.create({
       data: {
         ...input,
@@ -93,14 +95,30 @@ export const adherentRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }).merge(ZAdherent))
 
     .mutation(({ input, ctx }) => {
-      const dateNouvelAbonnement = moment(input.dateDebutAbonnement)
-        .add(1, "year")
-        .format(DATE_FORMAT);
+      const data: any = {};
+
+      for (const key in input) {
+        if (input[key as keyof typeof input]) {
+          if (key === "dateDebutAbonnement") {
+            console.log("input.dateDebutAbonnement", input.dateDebutAbonnement);
+            const dateNouvelAbonnement = moment(
+              input.dateDebutAbonnement,
+              DATE_FORMAT
+            )
+              .add(1, "year")
+              .format(DATE_FORMAT);
+            console.log("dataNouvelAbonnement", dateNouvelAbonnement);
+            data.dateDebutAbonnement = input.dateDebutAbonnement;
+            data.dateNouvelAbonnement = dateNouvelAbonnement;
+          } else data[key] = input[key as keyof typeof input];
+        }
+      }
+
       return ctx.prisma.adherent.update({
         where: { id: input.id },
         data: {
-          ...input,
-          dateNouvelAbonnement,
+          //...input,
+          ...data,
         },
       });
     }),
